@@ -1,0 +1,50 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: herramientas-server
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:-4000}:4000"
+    env_file:
+      - ./server/.env
+    environment:
+      - PORT=4000
+    depends_on:
+      - mongo
+    networks:
+      - herramientas-net
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:4000}
+    container_name: herramientas-client
+    restart: unless-stopped
+    ports:
+      - "${CLIENT_PORT:-3000}:80"
+    depends_on:
+      - server
+    networks:
+      - herramientas-net
+
+  mongo:
+    image: mongo:7
+    container_name: herramientas-mongo
+    restart: unless-stopped
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - herramientas-net
+
+volumes:
+  mongo-data:
+
+networks:
+  herramientas-net:
+    driver: bridge
