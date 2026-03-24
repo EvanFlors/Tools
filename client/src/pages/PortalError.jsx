@@ -24,7 +24,7 @@ function PortalErrorPage() {
 
     return (
         <>
-            <nav className="bg-emerald-600 text-white p-4 shadow-md">
+            <nav className="bg-black text-white p-4 shadow-md">
                 <ul className="flex gap-6 justify-center items-center">
                     <li>
                         <Link to="/portal" className="hover:underline">
@@ -39,7 +39,7 @@ function PortalErrorPage() {
                     <li className="ml-4">
                         <button
                             onClick={logout}
-                            className="px-3 py-1 bg-red-500 rounded hover:bg-red-600 transition text-sm font-semibold"
+                            className="px-3 py-1 bg-brand-600 rounded hover:bg-brand-700 transition text-sm font-semibold"
                         >
                             Logout
                         </button>
@@ -50,7 +50,7 @@ function PortalErrorPage() {
                 <p className="text-lg text-gray-600">{message}</p>
                 <Link
                     to="/portal"
-                    className="mt-4 inline-block text-emerald-600 hover:underline font-semibold"
+                    className="mt-4 inline-block text-brand-600 hover:underline font-semibold"
                 >
                     ← Back to Portal
                 </Link>

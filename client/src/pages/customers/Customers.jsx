@@ -15,7 +15,7 @@ function CustomersPage() {
                     <h1 className="text-4xl font-bold text-gray-800">Customers</h1>
                     <Link
                         to="/customers/new"
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center gap-2"
+                        className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
                     >
                         <span className="text-xl">+</span>
                         Create Customers
@@ -34,7 +34,7 @@ function CustomersPage() {
                 <h1 className="text-4xl font-bold text-gray-800">Customers</h1>
                 <Link
                     to="/customers/new"
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center gap-2"
+                    className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
                 >
                     <span className="text-xl">+</span>
                     Create Customers

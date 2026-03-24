@@ -22,7 +22,7 @@ function PaymentsPage() {
           <h1 className="text-4xl font-bold text-gray-800">Payments</h1>
           <Link
             to="/payments/new"
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center gap-2"
+            className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
           >
             <span className="text-xl">+</span>
             Record Payment
@@ -41,7 +41,7 @@ function PaymentsPage() {
         <h1 className="text-4xl font-bold text-gray-800">Payments</h1>
         <Link
           to="/payments/new"
-          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center gap-2"
+          className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
         >
           <span className="text-xl">+</span>
           Record Payment
@@ -54,12 +54,12 @@ function PaymentsPage() {
             <Link
               key={payment._id}
               to={`/payments/${payment._id}`}
-              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-emerald-500"
+              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-brand-500"
             >
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-sm text-gray-500">Payment</p>
-                  <h3 className="text-2xl font-bold text-emerald-600">
+                  <h3 className="text-2xl font-bold text-brand-600">
                     ${typeof payment.amount === "number"
                       ? payment.amount.toFixed(2)
                       : payment.amount}
@@ -102,7 +102,7 @@ function PaymentsPage() {
                     ? payment.previousBalance.toFixed(2)
                     : payment.previousBalance}{" "}
                   →{" "}
-                  <span className="font-semibold text-emerald-600">
+                  <span className="font-semibold text-brand-600">
                     ${typeof payment.newBalance === "number"
                       ? payment.newBalance.toFixed(2)
                       : payment.newBalance}

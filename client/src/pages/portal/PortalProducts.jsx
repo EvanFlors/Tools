@@ -39,7 +39,7 @@ function PortalProductsPage() {
             )}
             <h2 className="text-2xl font-semibold mb-2">{product.name}</h2>
             <p className="text-gray-600 mb-4">{product.description}</p>
-            <p className="text-lg font-bold text-emerald-600">
+            <p className="text-lg font-bold text-brand-600">
               ${typeof product.price === "number" ? product.price.toFixed(2) : product.price}
             </p>
           </Link>

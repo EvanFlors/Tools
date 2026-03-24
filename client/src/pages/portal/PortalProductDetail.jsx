@@ -9,7 +9,7 @@ function PortalProductDetailPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-red-600 mb-4">Product Not Found</h1>
-        <Link to="/portal" className="text-emerald-600 hover:underline">
+        <Link to="/portal" className="text-brand-600 hover:underline">
           Back to Products
         </Link>
       </div>
@@ -20,7 +20,7 @@ function PortalProductDetailPage() {
     <div className="container mx-auto px-4 py-8">
       <Link
         to="/portal"
-        className="text-emerald-600 hover:underline mb-4 inline-block"
+        className="text-brand-600 hover:underline mb-4 inline-block"
       >
         ← Back to Products
       </Link>
@@ -52,7 +52,7 @@ function PortalProductDetailPage() {
 
         <p className="text-gray-600 text-lg mb-6">{product.description}</p>
 
-        <p className="text-3xl font-bold text-emerald-600 mb-6">
+        <p className="text-3xl font-bold text-brand-600 mb-6">
           $
           {typeof product.price === "number"
             ? product.price.toFixed(2)

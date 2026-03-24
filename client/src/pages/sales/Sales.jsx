@@ -24,7 +24,7 @@ function SalesPage() {
                     <h1 className="text-4xl font-bold text-gray-800">Sales</h1>
                     <Link
                         to="/sales/new"
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center gap-2"
+                        className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
                     >
                         <span className="text-xl">+</span>
                         Create Sale
@@ -43,7 +43,7 @@ function SalesPage() {
                 <h1 className="text-4xl font-bold text-gray-800">Sales</h1>
                 <Link
                     to="/sales/new"
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center gap-2"
+                    className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
                 >
                     <span className="text-xl">+</span>
                     Create Sale
@@ -54,7 +54,7 @@ function SalesPage() {
                     <Link
                         key={sale._id}
                         to={`/sales/${sale._id}`}
-                        className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-blue-500"
+                        className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-brand-500"
                     >
                         <div className="flex justify-between items-start mb-4">
                             <div>
@@ -100,7 +100,7 @@ function SalesPage() {
                             </div>
                             <div className="flex justify-between items-center mt-2">
                                 <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                    sale.paymentType === 'full' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
+                                    sale.paymentType === 'full' ? 'bg-brand-100 text-brand-800' : 'bg-yellow-100 text-yellow-800'
                                 }`}>
                                     {String(sale.paymentType).toUpperCase()}
                                 </span>

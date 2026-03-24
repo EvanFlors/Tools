@@ -3,7 +3,7 @@ import { logout } from "../utils/auth";
 
 function MainNavigation() {
     return (
-        <nav className="bg-blue-600 text-white p-4 shadow-md">
+        <nav className="bg-black text-white p-4 shadow-md">
             <ul className="flex gap-6 justify-center items-center">
                 <li>
                     <NavLink
@@ -56,7 +56,7 @@ function MainNavigation() {
                 <li>
                     <button
                         onClick={logout}
-                        className="px-3 py-1 bg-red-500 rounded hover:bg-red-600 transition text-sm font-semibold"
+                        className="px-3 py-1 bg-brand-600 rounded hover:bg-brand-700 transition text-sm font-semibold"
                     >
                         Logout
                     </button>

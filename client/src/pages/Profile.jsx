@@ -80,7 +80,7 @@ function ProfilePage() {
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <Link
         to="/"
-        className="text-blue-600 hover:underline mb-6 inline-block"
+        className="text-brand-600 hover:underline mb-6 inline-block"
       >
         ← Back to Home
       </Link>
@@ -90,14 +90,14 @@ function ProfilePage() {
       {/* Profile Info Card */}
       <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
         <div className="flex items-center gap-4 mb-4">
-          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+          <div className="w-16 h-16 bg-brand-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
             {(profile.username || "U").charAt(0).toUpperCase()}
           </div>
           <div>
             <h2 className="text-2xl font-semibold text-gray-800">
               {profile.username}
             </h2>
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 uppercase">
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand-100 text-brand-800 uppercase">
               {profile.role}
             </span>
           </div>
@@ -148,7 +148,7 @@ function ProfilePage() {
               name="username"
               value={username}
               onChange={handleInputChange(setUsername)}
-              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -165,7 +165,7 @@ function ProfilePage() {
               name="phone"
               value={phone}
               onChange={handleInputChange(setPhone)}
-              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -187,7 +187,7 @@ function ProfilePage() {
               name="currentPassword"
               value={currentPassword}
               onChange={handleInputChange(setCurrentPassword)}
-              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -204,7 +204,7 @@ function ProfilePage() {
               name="newPassword"
               value={newPassword}
               onChange={handleInputChange(setNewPassword)}
-              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -221,14 +221,14 @@ function ProfilePage() {
               name="confirmPassword"
               value={confirmPassword}
               onChange={handleInputChange(setConfirmPassword)}
-              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting || !hasProfileChanges}
-            className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:bg-blue-300"
+            className="w-full px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold disabled:bg-brand-300"
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </button>

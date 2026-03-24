@@ -13,7 +13,7 @@ import { API_BASE } from "../../config/api";function PaymentDetailPage() {
         <h1 className="text-4xl font-bold text-red-600 mb-4">
           Payment Not Found
         </h1>
-        <Link to="/payments" className="text-blue-600 hover:underline">
+        <Link to="/payments" className="text-brand-600 hover:underline">
           Back to Payments
         </Link>
       </div>
@@ -68,7 +68,7 @@ import { API_BASE } from "../../config/api";function PaymentDetailPage() {
     <div className="container mx-auto px-4 py-8">
       <Link
         to="/payments"
-        className="text-blue-600 hover:underline mb-4 inline-block"
+        className="text-brand-600 hover:underline mb-4 inline-block"
       >
         ← Back to Payments
       </Link>
@@ -93,9 +93,9 @@ import { API_BASE } from "../../config/api";function PaymentDetailPage() {
         </div>
 
         {/* Payment Amount */}
-        <div className="border rounded-lg p-6 bg-emerald-50 mb-8 text-center">
+        <div className="border rounded-lg p-6 bg-brand-50 mb-8 text-center">
           <p className="text-sm text-gray-600 mb-1">Payment Amount</p>
-          <p className="text-5xl font-bold text-emerald-600">
+          <p className="text-5xl font-bold text-brand-600">
             $
             {typeof payment.amount === "number"
               ? payment.amount.toFixed(2)
@@ -124,7 +124,7 @@ import { API_BASE } from "../../config/api";function PaymentDetailPage() {
             <div className="text-3xl text-gray-400">→</div>
             <div className="text-center">
               <p className="text-sm text-gray-500">New Balance</p>
-              <p className="text-2xl font-bold text-emerald-600">
+              <p className="text-2xl font-bold text-brand-600">
                 $
                 {typeof payment.newBalance === "number"
                   ? payment.newBalance.toFixed(2)
@@ -136,7 +136,7 @@ import { API_BASE } from "../../config/api";function PaymentDetailPage() {
 
         {/* Linked Sale Info */}
         {sale && typeof sale === "object" && (
-          <div className="border rounded-lg p-6 bg-blue-50 mb-8">
+          <div className="border rounded-lg p-6 bg-brand-50 mb-8">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
               Linked Sale
             </h2>
@@ -176,7 +176,7 @@ import { API_BASE } from "../../config/api";function PaymentDetailPage() {
                 <span
                   className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                     sale.paymentType === "full"
-                      ? "bg-blue-100 text-blue-800"
+                      ? "bg-brand-100 text-brand-800"
                       : "bg-yellow-100 text-yellow-800"
                   }`}
                 >
@@ -198,7 +198,7 @@ import { API_BASE } from "../../config/api";function PaymentDetailPage() {
             </div>
             <Link
               to={`/sales/${sale._id}`}
-              className="text-blue-600 hover:underline text-sm mt-4 inline-block"
+              className="text-brand-600 hover:underline text-sm mt-4 inline-block"
             >
               View Sale →
             </Link>
@@ -213,7 +213,7 @@ import { API_BASE } from "../../config/api";function PaymentDetailPage() {
 
         <button
           onClick={navigateHandler}
-          className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full font-semibold"
+          className="mt-6 px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors w-full font-semibold"
         >
           Edit Payment
         </button>

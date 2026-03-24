@@ -11,7 +11,7 @@ function EditSalePage() {
         return (
             <div className="container mx-auto px-4 py-8">
                 <h1 className="text-4xl font-bold text-red-600 mb-4">Sale Not Found</h1>
-                <Link to="/sales" className="text-blue-600 hover:underline">
+                <Link to="/sales" className="text-brand-600 hover:underline">
                     Back to Sales
                 </Link>
             </div>

@@ -11,7 +11,7 @@ function EditPaymentPage() {
         <h1 className="text-4xl font-bold text-red-600 mb-4">
           Payment Not Found
         </h1>
-        <Link to="/payments" className="text-blue-600 hover:underline">
+        <Link to="/payments" className="text-brand-600 hover:underline">
           Back to Payments
         </Link>
       </div>

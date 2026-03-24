@@ -48,7 +48,7 @@ import { API_BASE } from "../../config/api";function ProductDetailPage() {
         return (
             <div className="container mx-auto px-4 py-8">
                 <h1 className="text-4xl font-bold text-red-600 mb-4">Product Not Found</h1>
-                <Link to="/products" className="text-blue-600 hover:underline">
+                <Link to="/products" className="text-brand-600 hover:underline">
                     Back to Products
                 </Link>
             </div>
@@ -59,7 +59,7 @@ import { API_BASE } from "../../config/api";function ProductDetailPage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <Link to="../" relative="path" className="text-blue-600 hover:underline mb-4 inline-block">
+            <Link to="../" relative="path" className="text-brand-600 hover:underline mb-4 inline-block">
                 ← Back to Products
             </Link>
             <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
@@ -86,12 +86,12 @@ import { API_BASE } from "../../config/api";function ProductDetailPage() {
                 )}
                 <h1 className="text-4xl font-bold text-gray-800 mb-4">{productData.name}</h1>
                 <p className="text-gray-600 text-lg mb-6">{productData.description}</p>
-                <p className="text-3xl font-bold text-blue-600 mb-6">
+                <p className="text-3xl font-bold text-brand-600 mb-6">
                     ${typeof productData.price === 'number' ? productData.price.toFixed(2) : productData.price}
                 </p>
                 <button
                     onClick={navigateHandler}
-                    className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full"
+                    className="mt-6 px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors w-full"
                 >
                     Edit product
                 </button>

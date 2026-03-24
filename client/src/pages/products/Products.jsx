@@ -22,7 +22,7 @@ function ProductsPage() {
                     <h1 className="text-4xl font-bold text-gray-800">Products</h1>
                     <Link
                         to="/products/new"
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center gap-2"
+                        className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
                     >
                         <span className="text-xl">+</span>
                         Create Product
@@ -41,7 +41,7 @@ function ProductsPage() {
                 <h1 className="text-4xl font-bold text-gray-800">Products</h1>
                 <Link
                     to="/products/new"
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center gap-2"
+                    className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
                 >
                     <span className="text-xl">+</span>
                     Create Product
@@ -67,7 +67,7 @@ function ProductsPage() {
                                 }}
                             />
                         )}
-                        <p className="text-lg font-bold text-blue-600 mt-4">
+                        <p className="text-lg font-bold text-brand-600 mt-4">
                             ${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}
                         </p>
                     </Link>

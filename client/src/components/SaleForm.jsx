@@ -59,7 +59,7 @@ function SaleForm({ sale }) {
     return (
         <>
             <button
-                className="w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 active:scale-95 transition mb-4"
+                className="w-8 h-8 bg-brand-500 text-white rounded-full hover:bg-brand-600 active:scale-95 transition mb-4"
                 aria-label="Go Back"
                 onClick={cancelHandler}
             >
@@ -92,7 +92,7 @@ function SaleForm({ sale }) {
                         value={selectedCustomer}
                         onChange={(e) => setSelectedCustomer(e.target.value)}
                         // required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     >
                         <option value="">Select a customer</option>
                         {customers.map((customer) => (
@@ -113,7 +113,7 @@ function SaleForm({ sale }) {
                         value={selectedProduct}
                         onChange={(e) => setSelectedProduct(e.target.value)}
                         // required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     >
                         <option value="">Select a product</option>
                         {products.map((product) => (
@@ -136,7 +136,7 @@ function SaleForm({ sale }) {
                         min="0"
                         defaultValue={sale ? sale.totalAmount : ''}
                         // required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                 </div>
 
@@ -153,7 +153,7 @@ function SaleForm({ sale }) {
                             setPaymentType(e.target.value);
                         }}
                         // required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     >
                         <option value="full">Full Payment</option>
                         <option value="installments">Installments</option>
@@ -168,7 +168,7 @@ function SaleForm({ sale }) {
                         name="status"
                         defaultValue={sale ? sale.status : 'active'}
                         required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     >
                         <option value="active">Active</option>
                         <option value="completed">Completed</option>
@@ -178,7 +178,7 @@ function SaleForm({ sale }) {
                 <button
                     type="submit"
                     disabled={navigation.state === "submitting"}
-                    className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full font-semibold disabled:bg-blue-300"
+                    className="mt-6 px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors w-full font-semibold disabled:bg-brand-300"
                 >
                     {navigation.state === "submitting"
                         ? "Submitting..."

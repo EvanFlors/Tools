@@ -26,7 +26,7 @@ function CustomerForm({ customer }) {
                         name="name"
                         defaultValue={customer ? customer.name : ''}
                         required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                 </div>
                 <div className="mb-4">
@@ -39,7 +39,7 @@ function CustomerForm({ customer }) {
                         name="phone"
                         defaultValue={customer ? customer.phone : ''}
                         required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                 </div>
                 <div className="mb-4">
@@ -52,13 +52,13 @@ function CustomerForm({ customer }) {
                         name="address"
                         defaultValue={customer ? customer.address : ''}
                         required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                 </div>
                 <button
                     type="submit"
                     disabled={navigation.state === "submitting"}
-                    className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full font-semibold disabled:bg-blue-300"
+                    className="mt-6 px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors w-full font-semibold disabled:bg-brand-300"
                 >
                     {navigation.state === "submitting"
                         ? "Submitting..."

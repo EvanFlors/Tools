@@ -59,7 +59,7 @@ function ProductForm({ product }) {
                         name="name"
                         defaultValue={product ? product.name : ''}
                         required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                 </div>
 
@@ -117,7 +117,7 @@ function ProductForm({ product }) {
                         multiple
                         accept="image/*"
                         onChange={handleImageChange}
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                     <p className="text-sm text-gray-500 mt-1">
                         Select up to 3 images (JPG, PNG, WebP - Max 5MB each)
@@ -134,7 +134,7 @@ function ProductForm({ product }) {
                         defaultValue={product ? product.description : ''}
                         //required
                         rows="4"
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                 </div>
 
@@ -150,14 +150,14 @@ function ProductForm({ product }) {
                         min="0"
                         defaultValue={product ? product.price : ''}
                         //required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                 </div>
 
                 <button
                     type="submit"
                     disabled={navigation.state === "submitting"}
-                    className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full font-semibold disabled:bg-blue-300"
+                    className="mt-6 px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors w-full font-semibold disabled:bg-brand-300"
                 >
                     {navigation.state === "submitting"
                         ? "Submitting..."

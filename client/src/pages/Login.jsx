@@ -18,7 +18,7 @@ function LoginPage() {
             onClick={() => setMode("admin")}
             className={`flex-1 py-4 text-center font-bold text-lg transition-colors ${
               mode === "admin"
-                ? "bg-blue-600 text-white"
+                ? "bg-black text-white"
                 : "bg-gray-100 text-gray-500 hover:bg-gray-200"
             }`}
           >
@@ -29,7 +29,7 @@ function LoginPage() {
             onClick={() => setMode("customer")}
             className={`flex-1 py-4 text-center font-bold text-lg transition-colors ${
               mode === "customer"
-                ? "bg-emerald-600 text-white"
+                ? "bg-black text-white"
                 : "bg-gray-100 text-gray-500 hover:bg-gray-200"
             }`}
           >
@@ -59,7 +59,7 @@ function LoginPage() {
                     id="username"
                     name="username"
                     required
-                    className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
                 <div className="mb-6">
@@ -71,7 +71,7 @@ function LoginPage() {
                     id="password"
                     name="password"
                     required
-                    className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </>
@@ -86,7 +86,7 @@ function LoginPage() {
                   name="phone"
                   required
                   placeholder="Enter your phone number"
-                  className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             )}
@@ -94,11 +94,7 @@ function LoginPage() {
             <button
               type="submit"
               disabled={navigation.state === "submitting"}
-              className={`px-6 py-3 text-white rounded-lg transition-colors w-full font-semibold disabled:opacity-50 ${
-                mode === "admin"
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-emerald-600 hover:bg-emerald-700"
-              }`}
+              className={"px-6 py-3 text-white rounded-lg transition-colors w-full font-semibold disabled:opacity-50 bg-gray-800 hover:bg-black"}
             >
               {navigation.state === "submitting"
                 ? "Logging in..."

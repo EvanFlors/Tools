@@ -9,7 +9,7 @@ function PortalSaleDetailPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-red-600 mb-4">Sale Not Found</h1>
-        <Link to="/portal/sales" className="text-emerald-600 hover:underline">
+        <Link to="/portal/sales" className="text-brand-600 hover:underline">
           Back to My Sales
         </Link>
       </div>
@@ -22,7 +22,7 @@ function PortalSaleDetailPage() {
     <div className="container mx-auto px-4 py-8">
       <Link
         to="/portal/sales"
-        className="text-emerald-600 hover:underline mb-4 inline-block"
+        className="text-brand-600 hover:underline mb-4 inline-block"
       >
         ← Back to My Sales
       </Link>
@@ -79,7 +79,7 @@ function PortalSaleDetailPage() {
         </div>
 
         {/* Payment Summary */}
-        <div className="border rounded-lg p-6 bg-emerald-50 mb-8">
+        <div className="border rounded-lg p-6 bg-brand-50 mb-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Payment Summary
           </h2>
@@ -107,7 +107,7 @@ function PortalSaleDetailPage() {
               <span
                 className={`inline-block px-4 py-2 rounded-full text-sm font-semibold mt-2 ${
                   sale.paymentType === "full"
-                    ? "bg-blue-100 text-blue-800"
+                    ? "bg-brand-100 text-brand-800"
                     : "bg-yellow-100 text-yellow-800"
                 }`}
               >
@@ -156,7 +156,7 @@ function PortalSaleDetailPage() {
                           payment.date || payment.createdAt
                         ).toLocaleDateString()}
                       </td>
-                      <td className="py-3 text-sm font-semibold text-emerald-600">
+                      <td className="py-3 text-sm font-semibold text-brand-600">
                         $
                         {typeof payment.amount === "number"
                           ? payment.amount.toFixed(2)

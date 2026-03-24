@@ -87,7 +87,7 @@ function PaymentForm({ payment, saleId: propSaleId }) {
   return (
     <>
       <button
-        className="w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 active:scale-95 transition mb-4"
+        className="w-8 h-8 bg-brand-500 text-white rounded-full hover:bg-brand-600 active:scale-95 transition mb-4"
         aria-label="Go Back"
         onClick={cancelHandler}
       >
@@ -128,7 +128,7 @@ function PaymentForm({ payment, saleId: propSaleId }) {
               value={selectedSale}
               onChange={(e) => setSelectedSale(e.target.value)}
               required
-              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <option value="">Select a sale</option>
               {sales.map((sale) => (
@@ -149,7 +149,7 @@ function PaymentForm({ payment, saleId: propSaleId }) {
 
         {/* Sale info card */}
         {saleInfo && (
-          <div className="mb-6 border rounded-lg p-4 bg-blue-50">
+          <div className="mb-6 border rounded-lg p-4 bg-brand-50">
             <h3 className="text-sm font-semibold text-gray-600 mb-2">
               Sale Information
             </h3>
@@ -189,7 +189,7 @@ function PaymentForm({ payment, saleId: propSaleId }) {
                 <span
                   className={`inline-block px-2 py-1 rounded text-xs font-medium ${
                     saleInfo.paymentType === "full"
-                      ? "bg-blue-100 text-blue-800"
+                      ? "bg-brand-100 text-brand-800"
                       : "bg-yellow-100 text-yellow-800"
                   }`}
                 >
@@ -235,7 +235,7 @@ function PaymentForm({ payment, saleId: propSaleId }) {
                 ? `Max: $${maxPayable.toFixed(2)}`
                 : "Enter payment amount"
             }
-            className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
           {maxPayable !== undefined && (
             <p className="text-sm text-gray-500 mt-1">
@@ -252,7 +252,7 @@ function PaymentForm({ payment, saleId: propSaleId }) {
         <button
           type="submit"
           disabled={navigation.state === "submitting"}
-          className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full font-semibold disabled:bg-blue-300"
+          className="mt-6 px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors w-full font-semibold disabled:bg-brand-300"
         >
           {navigation.state === "submitting"
             ? "Submitting..."
