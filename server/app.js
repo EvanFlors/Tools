@@ -12,6 +12,7 @@ import imageController from "./src/interfaces/controllers/image.controller.js";
 import adminRoutes from "./src/interfaces/routes/admin.routes.js";
 import authRoutes from "./src/interfaces/routes/auth.routes.js";
 import clientRoutes from "./src/interfaces/routes/client.routes.js";
+import publicRoutes from "./src/interfaces/routes/public.routes.js";
 
 const app = express();
 
@@ -35,6 +36,9 @@ app.use("/auth", authRoutes);
 
 // Public image endpoint (no authentication required)
 app.get("/images/:id", imageController.getImage);
+
+// Public routes (no authentication required)
+app.use("/catalog", publicRoutes);
 
 // Admin routes (protected)
 app.use("/admin", authenticate, adminRoutes);

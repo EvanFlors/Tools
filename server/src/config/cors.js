@@ -1,6 +1,10 @@
 import cors from "cors";
 
-const defaultOrigins = ["http://localhost:3000", "http://localhost:5173"];
+const defaultOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://localhost:5174",
+];
 
 const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim())
@@ -29,3 +33,15 @@ const corsProductionOptions = {
 };
 
 export default cors(corsBasicOptions);
+
+// import cors from "cors";
+
+// const corsOptions = {
+//   origin: true,
+//   credentials: true,
+//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+//   exposedHeaders: ["Content-Type", "Content-Length"],
+// };
+
+// export default cors(corsOptions);

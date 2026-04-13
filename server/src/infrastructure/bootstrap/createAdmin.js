@@ -1,5 +1,5 @@
-import User from "../../domain/models/user.model.js";
 import bcrypt from "bcryptjs";
+import User from "../../domain/models/user.model.js";
 
 async function createBootstrapAdmin() {
 

@@ -104,14 +104,6 @@ class PaymentService {
       throw error;
     }
 
-    if (sale.status === "completed") {
-      const error = new Error(
-        "Cannot delete a payment from a completed sale. Edit the sale first if adjustments are needed."
-      );
-      error.status = 422;
-      throw error;
-    }
-
     // restore sale balance
     sale.remainingBalance += payment.amount;
 
