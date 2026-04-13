@@ -1,25 +1,83 @@
-import { useState } from "react";
-import { Form, useNavigation, useActionData, redirect } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Form, useNavigation, useActionData, useLoaderData, redirect } from "react-router-dom";
 import { getAuthUser } from "../utils/auth";
 import { API_BASE } from "../config/api";
+import { useToast, ToastMessage } from "../components/Toast";
+import ProductsGrid from "../components/ProductsGrid";
 
 function LoginPage() {
   const data = useActionData();
+  const loaderData = useLoaderData();
   const navigation = useNavigation();
-  const [mode, setMode] = useState("admin"); // "admin" | "customer"
+  const [mode, setMode] = useState("admin");
+  const [showCatalog, setShowCatalog] = useState(true);
+  const { toast, showToast, dismissToast } = useToast();
 
+  const products = loaderData?.products || [];
+
+  useEffect(() => {
+    if (data?.error) {
+      showToast(data.error, "error");
+    }
+  }, [data, showToast]);
+
+  /* ───── Catalog View ───── */
+  if (showCatalog) {
+    return (
+      <div className="min-h-screen bg-neutral-100">
+        <ToastMessage toast={toast} onDismiss={dismissToast} />
+
+        {/* Nav */}
+        <nav className="fixed top-0 left-0 w-full z-50 bg-neutral-50 border-b border-neutral-200">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-12">
+            <span className="text-neutral-900 font-semibold text-base tracking-tight">
+              Herramientas
+            </span>
+            <button
+              onClick={() => setShowCatalog(false)}
+              className="px-3.5 py-1.5 bg-neutral-900 text-neutral-50 rounded-lg hover:bg-neutral-800 transition text-sm font-medium"
+            >
+              Login
+            </button>
+          </div>
+        </nav>
+
+        {/* Product grid */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 pt-22">
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold text-neutral-900 tracking-tight">Product Catalog</h2>
+            <p className="text-sm text-neutral-500 mt-1">
+              {products.length > 0 ? `${products.length} item${products.length !== 1 ? "s" : ""} available` : "Browse our collection"}
+            </p>
+          </div>
+
+          {products.length === 0 ? (
+            <div className="text-center text-neutral-400 py-20">
+              <p>No products available at the moment.</p>
+            </div>
+          ) : (
+            <ProductsGrid products={products} />
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  /* ───── Login View ───── */
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-neutral-100 px-4">
+      <ToastMessage toast={toast} onDismiss={dismissToast} />
+
+      <div className="bg-neutral-50 border border-neutral-200/80 rounded-xl w-full max-w-md overflow-hidden">
         {/* Tab toggle */}
-        <div className="flex">
+        <div className="flex border-b border-neutral-200">
           <button
             type="button"
             onClick={() => setMode("admin")}
-            className={`flex-1 py-4 text-center font-bold text-lg transition-colors ${
+            className={`flex-1 py-3 text-center font-medium text-sm transition-colors ${
               mode === "admin"
-                ? "bg-black text-white"
-                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                ? "text-neutral-900 border-b-2 border-neutral-900"
+                : "text-neutral-400 hover:text-neutral-600"
             }`}
           >
             Admin
@@ -27,31 +85,28 @@ function LoginPage() {
           <button
             type="button"
             onClick={() => setMode("customer")}
-            className={`flex-1 py-4 text-center font-bold text-lg transition-colors ${
+            className={`flex-1 py-3 text-center font-medium text-sm transition-colors ${
               mode === "customer"
-                ? "bg-black text-white"
-                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                ? "text-neutral-900 border-b-2 border-neutral-900"
+                : "text-neutral-400 hover:text-neutral-600"
             }`}
           >
             Customer
           </button>
         </div>
 
-        <div className="p-8">
-          {data && data.error && (
-            <div className="mb-4 text-red-600 bg-red-50 p-4 rounded text-center">
-              <p>⚠️ {data.error}</p>
-            </div>
-          )}
+        <div className="p-7">
+          <h1 className="text-xl font-semibold text-neutral-900 mb-6 text-center tracking-tight">
+            Herramientas
+          </h1>
 
           <Form method="post">
-            {/* Hidden field so the action knows which mode */}
             <input type="hidden" name="mode" value={mode} />
 
             {mode === "admin" ? (
               <>
                 <div className="mb-4">
-                  <label htmlFor="username" className="block text-gray-700 font-semibold mb-2">
+                  <label htmlFor="username" className="block text-sm font-medium text-neutral-700 mb-1.5">
                     Username
                   </label>
                   <input
@@ -59,11 +114,11 @@ function LoginPage() {
                     id="username"
                     name="username"
                     required
-                    className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-neutral-400 bg-neutral-50"
                   />
                 </div>
                 <div className="mb-6">
-                  <label htmlFor="password" className="block text-gray-700 font-semibold mb-2">
+                  <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1.5">
                     Password
                   </label>
                   <input
@@ -71,13 +126,13 @@ function LoginPage() {
                     id="password"
                     name="password"
                     required
-                    className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-neutral-400 bg-neutral-50"
                   />
                 </div>
               </>
             ) : (
               <div className="mb-6">
-                <label htmlFor="phone" className="block text-gray-700 font-semibold mb-2">
+                <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 mb-1.5">
                   Phone Number
                 </label>
                 <input
@@ -86,7 +141,7 @@ function LoginPage() {
                   name="phone"
                   required
                   placeholder="Enter your phone number"
-                  className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-neutral-400 bg-neutral-50"
                 />
               </div>
             )}
@@ -94,7 +149,7 @@ function LoginPage() {
             <button
               type="submit"
               disabled={navigation.state === "submitting"}
-              className={"px-6 py-3 text-white rounded-lg transition-colors w-full font-semibold disabled:opacity-50 bg-gray-800 hover:bg-black"}
+              className="w-full py-2.5 bg-neutral-900 text-neutral-50 rounded-lg hover:bg-neutral-800 transition font-medium text-sm disabled:opacity-50"
             >
               {navigation.state === "submitting"
                 ? "Logging in..."
@@ -103,6 +158,16 @@ function LoginPage() {
                 : "Login as Customer"}
             </button>
           </Form>
+
+          <div className="mt-5 text-center">
+            <button
+              type="button"
+              onClick={() => setShowCatalog(true)}
+              className="text-neutral-500 hover:text-neutral-800 font-medium text-sm transition-colors"
+            >
+              Browse product catalog →
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -129,12 +194,20 @@ export async function loginAction({ request }) {
     };
   }
 
-  const response = await fetch(url, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return {
+      error:
+        "Unable to connect to the server. Please make sure the backend is running and try again.",
+    };
+  }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -150,5 +223,18 @@ export async function loginLoader() {
   if (user) {
     return redirect(user.role === "customer" ? "/portal" : "/");
   }
-  return null;
+
+  // Fetch public product catalog
+  let products = [];
+  try {
+    const res = await fetch(`${API_BASE}/catalog/products`);
+    if (res.ok) {
+      const data = await res.json();
+      products = data.data || [];
+    }
+  } catch {
+    // Server unreachable — show empty catalog
+  }
+
+  return { products };
 }

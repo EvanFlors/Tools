@@ -4,55 +4,56 @@ import { API_BASE } from "../../config/api";
 function CustomersPage() {
     const data = useLoaderData();
 
-    const customers = data.data || data; // Handle both { data: [...] } and [...] formats
-
-    console.log(customers);
-
-    if (!customers || customers.length === 0) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-4xl font-bold text-gray-800">Customers</h1>
-                    <Link
-                        to="/customers/new"
-                        className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
-                    >
-                        <span className="text-xl">+</span>
-                        Create Customers
-                    </Link>
-                </div>
-                <div className="text-center text-gray-600 py-12">
-                    <p className="text-xl">No customers available at the moment.</p>
-                </div>
-            </div>
-        );
-    }
+    const customers = data.data || data;
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-4xl font-bold text-gray-800">Customers</h1>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+                <div>
+                    <h1 className="text-2xl font-semibold text-neutral-900 tracking-tight">Customers</h1>
+                    <p className="text-sm text-neutral-500 mt-1">
+                        {customers && customers.length > 0
+                            ? `${customers.length} customer${customers.length !== 1 ? "s" : ""}`
+                            : "No customers yet"}
+                    </p>
+                </div>
                 <Link
                     to="/customers/new"
-                    className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-neutral-900 text-neutral-50 rounded-lg hover:bg-neutral-800 transition text-sm font-medium"
                 >
-                    <span className="text-xl">+</span>
-                    Create Customers
+                    <span className="text-base leading-none">+</span>
+                    New customer
                 </Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {customers.map((customer) => (
-                    <Link
-                        key={customer._id}
-                        to={`/customers/${customer._id}`}
-                        className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
-                    >
-                        <h2 className="text-2xl font-semibold mb-2">{customer.name}</h2>
-                        <p className="text-gray-600">Télefono: {customer.phone}</p>
-                        <p className="text-gray-400">Dirección: {customer.address}</p>
-                    </Link>
-                ))}
-            </div>
+
+            {!customers || customers.length === 0 ? (
+                <div className="text-center text-neutral-400 py-20">
+                    <p>No customers available at the moment.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {customers.map((customer) => (
+                        <Link
+                            key={customer._id}
+                            to={`/customers/${customer._id}`}
+                            className="bg-neutral-50 border border-neutral-200/80 rounded-xl p-5 hover:border-neutral-300 transition-all group"
+                        >
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="w-9 h-9 bg-neutral-800 rounded-full flex items-center justify-center text-neutral-50 text-sm font-medium">
+                                    {(customer.name || "?").charAt(0).toUpperCase()}
+                                </div>
+                                <h2 className="text-base font-semibold text-neutral-900 group-hover:text-neutral-700 transition-colors">
+                                    {customer.name}
+                                </h2>
+                            </div>
+                            <div className="space-y-1 text-sm">
+                                <p className="text-neutral-500">{customer.phone}</p>
+                                <p className="text-neutral-400">{customer.address}</p>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

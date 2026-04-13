@@ -1,20 +1,20 @@
-import { Outlet, useNavigation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import MainNavigation from "../components/MainNavigation";
+import { GlobalToastProvider } from "../components/Toast";
 
 function RootLayout() {
-    // const navigation = useNavigation();
-
-    return (
-        <div>
-            <header>
-                <MainNavigation />
-            </header>
-            <main>
-                {/* {navigation.state === 'loading' && <p>Loading...</p>} */}
-                <Outlet />
-            </main>
-        </div>
-    );
+  return (
+    <GlobalToastProvider>
+      <div className="min-h-screen bg-neutral-100 text-neutral-800">
+        <header>
+          <MainNavigation />
+        </header>
+        <main className="pt-12">
+          <Outlet />
+        </main>
+      </div>
+    </GlobalToastProvider>
+  );
 }
 
 export default RootLayout;

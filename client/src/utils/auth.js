@@ -1,3 +1,4 @@
+import { showGlobalToast } from "../components/Toast";
 import { API_BASE } from "../config/api";
 
 /**
@@ -5,28 +6,60 @@ import { API_BASE } from "../config/api";
  *  1. Always sends cookies (credentials: "include")
  *  2. On a 401, tries to refresh the token once and retries
  *  3. On a second 401, redirects to /login
+ *  4. On network failure, shows a toast popup
  */
 export async function fetchWithAuth(url, options = {}) {
   const opts = { ...options, credentials: "include" };
 
-  let response = await fetch(url, opts);
+  let response;
+  try {
+    response = await fetch(url, opts);
+  } catch {
+    showGlobalToast(
+      "Unable to connect to the server. Please make sure the backend is running.",
+      "error"
+    );
+    throw new Response(
+      JSON.stringify({
+        message:
+          "Unable to connect to the server. Please make sure the backend is running.",
+      }),
+      { status: 503 }
+    );
+  }
 
   if (response.status === 401) {
-    // Try to refresh
-    const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
-      method: "POST",
-      credentials: "include",
-    });
+    let refreshRes;
+    try {
+      refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      window.location.href = "/login";
+      return new Promise(() => {});
+    }
 
     if (refreshRes.ok) {
-      // Retry original request
-      response = await fetch(url, opts);
+      try {
+        response = await fetch(url, opts);
+      } catch {
+        showGlobalToast(
+          "Unable to connect to the server. Please make sure the backend is running.",
+          "error"
+        );
+        throw new Response(
+          JSON.stringify({
+            message:
+              "Unable to connect to the server. Please make sure the backend is running.",
+          }),
+          { status: 503 }
+        );
+      }
     }
 
     if (response.status === 401) {
-      // Still unauthorized → redirect to login
       window.location.href = "/login";
-      // Return a never-resolving promise so caller doesn't continue
       return new Promise(() => {});
     }
   }

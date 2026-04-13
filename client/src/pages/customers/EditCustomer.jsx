@@ -6,9 +6,9 @@ function EditCustomerPage() {
 
     if (!customer || !customer.data) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-red-600 mb-4">Customer Not Found</h1>
-                <Link to="/customers" className="text-brand-600 hover:underline">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+                <h1 className="text-2xl font-semibold text-neutral-900 mb-4">Customer Not Found</h1>
+                <Link to="/customers" className="text-sm text-neutral-500 hover:text-neutral-800 transition-colors">
                     Back to Customers
                 </Link>
             </div>
@@ -18,9 +18,9 @@ function EditCustomerPage() {
     const customerData = customer.data;
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Edit Customer</h1>
-            <Link to="/customers" relative="path" className="text-brand-600 hover:underline mb-4 inline-block">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+            <h1 className="text-2xl font-semibold text-neutral-900 tracking-tight mb-6">Edit customer</h1>
+            <Link to="/customers" relative="path" className="text-sm text-neutral-500 hover:text-neutral-800 transition-colors mb-4 inline-block">
                 ← Back to Customers
             </Link>
             <CustomerForm customer={customerData} />

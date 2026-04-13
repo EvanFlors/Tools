@@ -6,113 +6,105 @@ function PaymentsPage() {
 
   if (!data || data.status === 500) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-6">Error</h1>
-        <p className="text-xl text-red-600">{data?.message}</p>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+        <h1 className="text-2xl font-semibold text-neutral-900 mb-6">Error</h1>
+        <p className="text-sm text-neutral-500">{data?.message}</p>
       </div>
     );
   }
 
   const payments = data.data || data;
 
-  if (!payments || payments.length === 0) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-gray-800">Payments</h1>
-          <Link
-            to="/payments/new"
-            className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
-          >
-            <span className="text-xl">+</span>
-            Record Payment
-          </Link>
-        </div>
-        <div className="text-center text-gray-600 py-12">
-          <p className="text-xl">No payments recorded yet.</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-bold text-gray-800">Payments</h1>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-semibold text-neutral-900 tracking-tight">Payments</h1>
+          <p className="text-sm text-neutral-500 mt-1">
+            {payments && payments.length > 0
+              ? `${payments.length} payment${payments.length !== 1 ? "s" : ""}`
+              : "No payments yet"}
+          </p>
+        </div>
         <Link
           to="/payments/new"
-          className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold flex items-center gap-2"
+          className="inline-flex items-center gap-1.5 px-4 py-2 bg-neutral-900 text-neutral-50 rounded-lg hover:bg-neutral-800 transition text-sm font-medium"
         >
-          <span className="text-xl">+</span>
-          Record Payment
+          <span className="text-base leading-none">+</span>
+          New payment
         </Link>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {payments.map((payment) => {
-          const sale = payment.saleId;
-          return (
-            <Link
-              key={payment._id}
-              to={`/payments/${payment._id}`}
-              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-brand-500"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <p className="text-sm text-gray-500">Payment</p>
-                  <h3 className="text-2xl font-bold text-brand-600">
-                    ${typeof payment.amount === "number"
-                      ? payment.amount.toFixed(2)
-                      : payment.amount}
-                  </h3>
-                </div>
-                <span className="text-xs text-gray-500">
-                  {new Date(payment.createdAt).toLocaleDateString()}
-                </span>
-              </div>
 
-              {sale && (
-                <div className="border-t pt-3 space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Customer:</span>
-                    <span className="text-sm font-medium text-gray-800">
-                      {sale.customerId?.name || "N/A"}
-                    </span>
+      {!payments || payments.length === 0 ? (
+        <div className="text-center text-neutral-400 py-20">
+          <p>No payments recorded yet.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {payments.map((payment) => {
+            const sale = payment.saleId;
+            return (
+              <Link
+                key={payment._id}
+                to={`/payments/${payment._id}`}
+                className="bg-neutral-50 border border-neutral-200/80 rounded-xl p-5 hover:border-neutral-300 transition-all"
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <p className="text-xs font-medium text-neutral-400">Payment</p>
+                    <h3 className="text-2xl font-semibold text-neutral-900">
+                      ${typeof payment.amount === "number"
+                        ? payment.amount.toFixed(2)
+                        : payment.amount}
+                    </h3>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Product:</span>
-                    <span className="text-sm font-medium text-gray-800">
-                      {sale.productId?.name || "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Sale Total:</span>
-                    <span className="text-sm font-semibold text-gray-800">
-                      ${typeof sale.totalAmount === "number"
-                        ? sale.totalAmount.toFixed(2)
-                        : sale.totalAmount}
-                    </span>
-                  </div>
+                  <span className="text-xs text-neutral-400">
+                    {new Date(payment.createdAt).toLocaleDateString()}
+                  </span>
                 </div>
-              )}
 
-              <div className="mt-3 flex justify-between items-center">
-                <div className="text-xs text-gray-500">
-                  <span className="text-gray-400">Balance: </span>
+                {sale && (
+                  <div className="border-t border-neutral-200/60 pt-3 space-y-1.5">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-neutral-500">Customer:</span>
+                      <span className="font-medium text-neutral-900">
+                        {sale.customerId?.name || "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-neutral-500">Product:</span>
+                      <span className="font-medium text-neutral-900">
+                        {sale.productId?.name || "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-neutral-500">Sale Total:</span>
+                      <span className="font-semibold text-neutral-900">
+                        ${typeof sale.totalAmount === "number"
+                          ? sale.totalAmount.toFixed(2)
+                          : sale.totalAmount}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-3 text-xs text-neutral-400">
+                  <span>Balance: </span>
                   ${typeof payment.previousBalance === "number"
                     ? payment.previousBalance.toFixed(2)
                     : payment.previousBalance}{" "}
                   →{" "}
-                  <span className="font-semibold text-brand-600">
+                  <span className="font-semibold text-neutral-700">
                     ${typeof payment.newBalance === "number"
                       ? payment.newBalance.toFixed(2)
                       : payment.newBalance}
                   </span>
                 </div>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

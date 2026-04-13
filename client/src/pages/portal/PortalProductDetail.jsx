@@ -1,5 +1,6 @@
 import { Link, useLoaderData } from "react-router-dom";
 import { API_BASE } from "../../config/api";
+import ImageCarousel from "../../components/ImageCarousel";
 
 function PortalProductDetailPage() {
   const data = useLoaderData();
@@ -7,57 +8,33 @@ function PortalProductDetailPage() {
 
   if (!product || !product._id) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-red-600 mb-4">Product Not Found</h1>
-        <Link to="/portal" className="text-brand-600 hover:underline">
-          Back to Products
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        <h1 className="text-2xl font-semibold text-neutral-900 mb-4">Product Not Found</h1>
+        <Link to="/portal" className="text-sm text-neutral-500 hover:text-neutral-800 transition-colors">
+          ← Back to Products
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Link
-        to="/portal"
-        className="text-brand-600 hover:underline mb-4 inline-block"
-      >
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+      <Link to="/portal" className="text-sm text-neutral-500 hover:text-neutral-800 transition-colors mb-6 inline-block">
         ← Back to Products
       </Link>
 
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
-        {/* Images */}
-        {product.imageIds && product.imageIds.length > 0 && (
-          <div className="mb-6">
-            <div className="grid grid-cols-1 gap-4">
-              {product.imageIds.map((image, index) => (
-                <img
-                  key={index}
-                  src={`${API_BASE}/images/${image._id || image}`}
-                  alt={product.name}
-                  className="w-full h-64 object-contain rounded-lg"
-                  crossOrigin="anonymous"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+      <div className="bg-neutral-50 border border-neutral-200/80 rounded-xl overflow-hidden">
+        <div className="px-5 pt-5 sm:px-6 sm:pt-6">
+          <ImageCarousel images={product.imageIds} alt={product.name} height="h-64 sm:h-80" />
+        </div>
 
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">
-          {product.name}
-        </h1>
-
-        <p className="text-gray-600 text-lg mb-6">{product.description}</p>
-
-        <p className="text-3xl font-bold text-brand-600 mb-6">
-          $
-          {typeof product.price === "number"
-            ? product.price.toFixed(2)
-            : product.price}
-        </p>
+        <div className="p-5 sm:p-6 space-y-3">
+          <h1 className="text-xl font-semibold text-neutral-900 tracking-tight">{product.name}</h1>
+          <p className="text-sm text-neutral-600 leading-relaxed">{product.description}</p>
+          <p className="text-2xl font-semibold text-neutral-900">
+            ${typeof product.price === "number" ? product.price.toFixed(2) : product.price}
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -8,6 +8,9 @@ import {
 } from "react-router-dom";
 import { API_BASE } from "../config/api";
 
+const inputClass =
+  "w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-neutral-400 bg-neutral-50";
+
 function PaymentForm({ payment, saleId: propSaleId }) {
   const data = useActionData();
   const navigate = useNavigate();
@@ -21,11 +24,9 @@ function PaymentForm({ payment, saleId: propSaleId }) {
   const method = payment ? "put" : "post";
   const isEdit = !!payment;
 
-  // Initialize form values when editing
   useEffect(() => {
     if (payment) {
-      const sid =
-        payment.saleId?._id || payment.saleId || "";
+      const sid = payment.saleId?._id || payment.saleId || "";
       setSelectedSale(sid);
       setAmount(payment.amount ?? "");
     } else if (propSaleId) {
@@ -33,16 +34,11 @@ function PaymentForm({ payment, saleId: propSaleId }) {
     }
   }, [payment, propSaleId]);
 
-  // Fetch sales for dropdown (only when creating)
   useEffect(() => {
     if (!isEdit) {
       fetch(`${API_BASE}/admin/sales`, { credentials: "include" })
-        .then((res) => {
-          if (!res.ok) throw new Error("Failed to fetch sales");
-          return res.json();
-        })
+        .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
         .then((data) => {
-          // Only show active sales (with remaining balance)
           const activeSales = (data.data || data || []).filter(
             (s) => s.status === "active" && s.remainingBalance > 0
           );
@@ -52,160 +48,99 @@ function PaymentForm({ payment, saleId: propSaleId }) {
     }
   }, [isEdit]);
 
-  // Fetch selected sale info for balance display
   useEffect(() => {
-    if (!selectedSale) {
-      setSaleInfo(null);
-      return;
-    }
-
+    if (!selectedSale) { setSaleInfo(null); return; }
     fetch(`${API_BASE}/admin/sales/${selectedSale}`, { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch sale");
-        return res.json();
-      })
-      .then((data) => {
-        const sale = data.data || data;
-        setSaleInfo(sale);
-      })
+      .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
+      .then((data) => setSaleInfo(data.data || data))
       .catch(() => setSaleInfo(null));
   }, [selectedSale]);
 
-  // Calculate max payable amount
-  // When editing: remaining balance + current payment amount (refund then reapply)
-  // When creating: just remaining balance
   const maxPayable = saleInfo
     ? isEdit
       ? saleInfo.remainingBalance + (payment?.amount || 0)
       : saleInfo.remainingBalance
     : undefined;
 
-  function cancelHandler() {
-    navigate(-1);
-  }
+  function cancelHandler() { navigate(-1); }
 
   return (
     <>
       <button
-        className="w-8 h-8 bg-brand-500 text-white rounded-full hover:bg-brand-600 active:scale-95 transition mb-4"
-        aria-label="Go Back"
-        onClick={cancelHandler}
-      >
-        ←
-      </button>
-      <Form
-        method={method}
-        className="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto"
-      >
-        {/* Validation errors (Zod) */}
+        className="w-7 h-7 bg-neutral-200 text-neutral-600 rounded-md hover:bg-neutral-300 transition mb-4 text-sm"
+        aria-label="Go Back" onClick={cancelHandler}
+      >←</button>
+
+      <Form method={method} className="bg-neutral-50 border border-neutral-200/80 p-5 sm:p-6 rounded-xl max-w-2xl mx-auto">
         {data && data.errors && (
-          <ul className="mb-4 text-red-600 bg-red-50 p-4 rounded">
+          <ul className="mb-4 text-sm text-brand-600 bg-brand-50 border border-brand-100 p-3 rounded-lg">
             {Object.entries(data.errors).map(([field, message]) => (
               <li key={field}>• {message}</li>
             ))}
           </ul>
         )}
-
-        {/* Business logic errors */}
         {data && data.error && (
-          <div className="mb-4 text-red-600 bg-red-50 p-4 rounded">
-            <p>⚠️ {data.error}</p>
+          <div className="mb-4 text-sm text-brand-600 bg-brand-50 border border-brand-100 p-3 rounded-lg">
+            {data.error}
           </div>
         )}
 
-        {/* Sale selector — only for creation */}
+        {/* Sale selector — creation only */}
         {!isEdit && (
           <div className="mb-4">
-            <label
-              htmlFor="saleId"
-              className="block text-gray-700 font-semibold mb-2"
-            >
-              Sale *
-            </label>
-            <select
-              id="saleId"
-              name="saleId"
-              value={selectedSale}
-              onChange={(e) => setSelectedSale(e.target.value)}
-              required
-              className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-            >
+            <label htmlFor="saleId" className="block text-sm font-medium text-neutral-700 mb-1.5">Sale *</label>
+            <select id="saleId" name="saleId" value={selectedSale} required
+              onChange={(e) => setSelectedSale(e.target.value)} className={inputClass}>
               <option value="">Select a sale</option>
-              {sales.map((sale) => (
-                <option key={sale._id} value={sale._id}>
-                  {sale.customerId?.name || "Unknown"} —{" "}
-                  {sale.productId?.name || "Unknown"} — Remaining: $
-                  {sale.remainingBalance?.toFixed(2)}
+              {sales.map((s) => (
+                <option key={s._id} value={s._id}>
+                  {s.customerId?.name || "Unknown"} — {s.productId?.name || "Unknown"} — Remaining: ${s.remainingBalance?.toFixed(2)}
                 </option>
               ))}
             </select>
           </div>
         )}
-
-        {/* Hidden saleId for edit mode */}
-        {isEdit && (
-          <input type="hidden" name="saleId" value={selectedSale} />
-        )}
+        {isEdit && <input type="hidden" name="saleId" value={selectedSale} />}
 
         {/* Sale info card */}
         {saleInfo && (
-          <div className="mb-6 border rounded-lg p-4 bg-brand-50">
-            <h3 className="text-sm font-semibold text-gray-600 mb-2">
-              Sale Information
-            </h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="mb-5 bg-neutral-100 border border-neutral-200/60 rounded-lg p-4">
+            <h3 className="text-xs font-medium text-neutral-500 mb-2">Sale Information</h3>
+            <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-gray-500">Customer</p>
-                <p className="font-medium">
-                  {saleInfo.customerId?.name || "N/A"}
+                <p className="text-xs text-neutral-400">Customer</p>
+                <p className="font-medium text-neutral-900">{saleInfo.customerId?.name || "N/A"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-neutral-400">Product</p>
+                <p className="font-medium text-neutral-900">{saleInfo.productId?.name || "N/A"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-neutral-400">Total Amount</p>
+                <p className="font-medium text-neutral-900">
+                  ${typeof saleInfo.totalAmount === "number" ? saleInfo.totalAmount.toFixed(2) : saleInfo.totalAmount}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500">Product</p>
-                <p className="font-medium">
-                  {saleInfo.productId?.name || "N/A"}
+                <p className="text-xs text-neutral-400">Remaining Balance</p>
+                <p className="font-semibold text-neutral-900">
+                  ${typeof saleInfo.remainingBalance === "number" ? saleInfo.remainingBalance.toFixed(2) : saleInfo.remainingBalance}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500">Total Amount</p>
-                <p className="font-medium">
-                  $
-                  {typeof saleInfo.totalAmount === "number"
-                    ? saleInfo.totalAmount.toFixed(2)
-                    : saleInfo.totalAmount}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-500">Remaining Balance</p>
-                <p className="font-bold text-red-600">
-                  $
-                  {typeof saleInfo.remainingBalance === "number"
-                    ? saleInfo.remainingBalance.toFixed(2)
-                    : saleInfo.remainingBalance}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-500">Payment Type</p>
-                <span
-                  className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-                    saleInfo.paymentType === "full"
-                      ? "bg-brand-100 text-brand-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
-                >
-                  {String(saleInfo.paymentType).toUpperCase()}
+                <p className="text-xs text-neutral-400">Payment Type</p>
+                <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
+                  saleInfo.paymentType === "full" ? "bg-neutral-200 text-neutral-700" : "bg-yellow-50 text-yellow-700"
+                }`}>
+                  {saleInfo.paymentType}
                 </span>
               </div>
               <div>
-                <p className="text-gray-500">Status</p>
-                <span
-                  className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-                    saleInfo.status === "active"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-gray-100 text-gray-800"
-                  }`}
-                >
-                  {String(saleInfo.status).toUpperCase()}
+                <p className="text-xs text-neutral-400">Status</p>
+                <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
+                  saleInfo.status === "active" ? "bg-green-100 text-green-700" : "bg-neutral-200 text-neutral-600"
+                }`}>
+                  {saleInfo.status}
                 </span>
               </div>
             </div>
@@ -214,51 +149,27 @@ function PaymentForm({ payment, saleId: propSaleId }) {
 
         {/* Amount */}
         <div className="mb-4">
-          <label
-            htmlFor="amount"
-            className="block text-gray-700 font-semibold mb-2"
-          >
-            Amount *
-          </label>
-          <input
-            type="number"
-            id="amount"
-            name="amount"
-            step="0.01"
-            min="0.01"
-            max={maxPayable || undefined}
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
-            placeholder={
-              maxPayable
-                ? `Max: $${maxPayable.toFixed(2)}`
-                : "Enter payment amount"
-            }
-            className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-          />
+          <label htmlFor="amount" className="block text-sm font-medium text-neutral-700 mb-1.5">Amount *</label>
+          <input type="number" id="amount" name="amount" step="0.01" min="0.01"
+            max={maxPayable || undefined} value={amount}
+            onChange={(e) => setAmount(e.target.value)} required
+            placeholder={maxPayable ? `Max: $${maxPayable.toFixed(2)}` : "Enter payment amount"}
+            className={inputClass} />
           {maxPayable !== undefined && (
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-xs text-neutral-400 mt-1">
               Maximum payable: ${maxPayable.toFixed(2)}
               {isEdit && saleInfo && (
-                <span className="text-gray-400">
-                  {" "}(remaining ${saleInfo.remainingBalance?.toFixed(2)} + current payment ${payment?.amount?.toFixed(2)})
-                </span>
+                <span> (remaining ${saleInfo.remainingBalance?.toFixed(2)} + current ${payment?.amount?.toFixed(2)})</span>
               )}
             </p>
           )}
         </div>
 
-        <button
-          type="submit"
-          disabled={navigation.state === "submitting"}
-          className="mt-6 px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors w-full font-semibold disabled:bg-brand-300"
-        >
+        <button type="submit" disabled={navigation.state === "submitting"}
+          className="w-full py-2.5 bg-neutral-900 text-neutral-50 rounded-lg hover:bg-neutral-800 transition font-medium text-sm disabled:opacity-50 mt-2">
           {navigation.state === "submitting"
             ? "Submitting..."
-            : isEdit
-            ? "Update Payment"
-            : "Record Payment"}
+            : isEdit ? "Update payment" : "Record payment"}
         </button>
       </Form>
     </>

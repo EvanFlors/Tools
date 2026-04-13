@@ -5,6 +5,8 @@ import ErrorPage from "./pages/Error";
 import PortalErrorPage from "./pages/PortalError";
 import HomePage from "./pages/Home";
 import ProfilePage, { profileLoader, profileAction } from "./pages/Profile";
+
+import LoginLayout from "./pages/login/LoginLayout";
 import LoginPage, { loginAction, loginLoader } from "./pages/Login";
 
 import ProductsPage, { loader as ProductsLoader } from "./pages/products/Products";
@@ -65,9 +67,15 @@ async function portalRootLoader() {
 const router = createBrowserRouter([
   {
     path: "/login",
-    element: <LoginPage />,
-    action: loginAction,
-    loader: loginLoader,
+    element: <LoginLayout />,
+    children: [
+      {
+        index: true,
+        element: <LoginPage />,
+        loader: loginLoader,
+        action: loginAction,
+      },
+    ],
   },
   // ─── Customer portal ───
   {

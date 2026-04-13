@@ -1,6 +1,10 @@
 import { Link, useRouteLoaderData, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { API_BASE } from "../../config/api";function ProductDetailPage() {
+import { API_BASE } from "../../config/api";
+import { showGlobalToast } from "../../components/Toast";
+import ImageCarousel from "../../components/ImageCarousel";
+
+function ProductDetailPage() {
     const product = useRouteLoaderData("product-detail");
     const navigate = useNavigate();
     const [isDeleting, setIsDeleting] = useState(false);
@@ -11,7 +15,6 @@ import { API_BASE } from "../../config/api";function ProductDetailPage() {
 
     async function startDeleteHandling() {
         const proceed = window.confirm("Are you sure you want to delete this product?");
-
         if (!proceed) return;
 
         setIsDeleting(true);
@@ -24,32 +27,33 @@ import { API_BASE } from "../../config/api";function ProductDetailPage() {
 
             if (response.status === 422 || response.status === 400) {
                 const errorData = await response.json();
-                window.alert(`Error: ${errorData.error || 'Cannot delete this product.'}`);
+                showGlobalToast(errorData.error || "Cannot delete this product.", "error");
                 setIsDeleting(false);
                 return;
             }
 
             if (!response.ok) {
                 const errorData = await response.json();
-                window.alert(`Error: ${errorData.error || 'Failed to delete product.'}`);
+                showGlobalToast(errorData.error || "Failed to delete product.", "error");
                 setIsDeleting(false);
                 return;
             }
 
+            showGlobalToast("Product deleted successfully.", "success");
             navigate("/products", { replace: true });
         } catch (error) {
             console.error("Error deleting product:", error);
-            window.alert("An error occurred while deleting the product. Please try again.");
+            showGlobalToast("Unable to connect to the server. Please try again.", "error");
             setIsDeleting(false);
         }
     }
 
     if (!product || !product.data) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-red-600 mb-4">Product Not Found</h1>
-                <Link to="/products" className="text-brand-600 hover:underline">
-                    Back to Products
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+                <h1 className="text-xl font-semibold text-neutral-900 mb-4">Product Not Found</h1>
+                <Link to="/products" className="text-sm text-neutral-500 hover:text-neutral-800 transition-colors">
+                    ← Back to Products
                 </Link>
             </div>
         );
@@ -58,43 +62,50 @@ import { API_BASE } from "../../config/api";function ProductDetailPage() {
     const productData = product.data;
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <Link to="../" relative="path" className="text-brand-600 hover:underline mb-4 inline-block">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+            <Link to="../" relative="path" className="text-sm text-neutral-500 hover:text-neutral-800 transition-colors mb-8 inline-block">
                 ← Back to Products
             </Link>
-            <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
-                <div className="flex justify-end">
+
+            <div className="bg-neutral-50 border border-neutral-200/80 rounded-xl overflow-hidden">
+                {/* Image */}
+                <div className="px-5 pt-5">
+                    <ImageCarousel
+                        images={productData.imageIds}
+                        alt={productData.name}
+                        height="h-64 sm:h-80"
+                    />
+                </div>
+
+                {/* Info */}
+                <div className="p-5 sm:p-6">
+                    <div className="flex items-start justify-between gap-3 mb-4">
+                        <h1 className="text-xl sm:text-2xl font-semibold text-neutral-900 tracking-tight leading-tight">
+                            {productData.name}
+                        </h1>
+                        <button
+                            className="shrink-0 w-7 h-7 flex items-center justify-center rounded-md text-neutral-400 hover:text-brand-600 hover:bg-brand-50 transition text-xs disabled:opacity-40"
+                            aria-label="Delete"
+                            onClick={startDeleteHandling}
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? '…' : '✕'}
+                        </button>
+                    </div>
+
+                    <p className="text-neutral-600 text-sm leading-relaxed mb-5">{productData.description}</p>
+
+                    <p className="text-2xl font-semibold text-neutral-900 mb-6">
+                        ${typeof productData.price === 'number' ? productData.price.toFixed(2) : productData.price}
+                    </p>
+
                     <button
-                        className="w-8 h-8 flex items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 active:scale-95 transition disabled:bg-red-300 disabled:cursor-not-allowed"
-                        aria-label="Delete"
-                        onClick={startDeleteHandling}
-                        disabled={isDeleting}
+                        onClick={navigateHandler}
+                        className="w-full py-2.5 bg-neutral-900 text-neutral-50 rounded-lg hover:bg-neutral-800 transition font-medium text-sm"
                     >
-                    {isDeleting ? '...' : '✕'}
+                        Edit product
                     </button>
                 </div>
-                {productData.imageIds && productData.imageIds.length > 0 && (
-                    <img
-                        src={`${API_BASE}/images/${productData.imageIds[0]._id}`}
-                        alt={productData.name}
-                        className="w-full h-64 object-contain rounded-lg mb-6"
-                        crossOrigin="anonymous"
-                        onError={(e) => {
-                            e.target.style.display = 'none';
-                        }}
-                    />
-                )}
-                <h1 className="text-4xl font-bold text-gray-800 mb-4">{productData.name}</h1>
-                <p className="text-gray-600 text-lg mb-6">{productData.description}</p>
-                <p className="text-3xl font-bold text-brand-600 mb-6">
-                    ${typeof productData.price === 'number' ? productData.price.toFixed(2) : productData.price}
-                </p>
-                <button
-                    onClick={navigateHandler}
-                    className="mt-6 px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors w-full"
-                >
-                    Edit product
-                </button>
             </div>
         </div>
     );

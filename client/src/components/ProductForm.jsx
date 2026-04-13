@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Form, useNavigation, useActionData, redirect } from "react-router-dom";
 import { API_BASE } from "../config/api";
 
+const inputClass =
+  "w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-neutral-400 bg-neutral-50";
+
 function ProductForm({ product }) {
     const data = useActionData();
-
     const navigation = useNavigation();
 
     const [imagePreviews, setImagePreviews] = useState([]);
@@ -14,27 +16,16 @@ function ProductForm({ product }) {
 
     function handleImageChange(e) {
         const files = Array.from(e.target.files);
-
-        if (files.length === 0) {
-            setImagePreviews([]);
-            return;
-        }
+        if (files.length === 0) { setImagePreviews([]); return; }
 
         setImageLoading(true);
-
-        const previewPromises = files.map(file => {
-            return new Promise((resolve) => {
+        const previewPromises = files.map(file =>
+            new Promise((resolve) => {
                 const reader = new FileReader();
-                reader.onloadend = () => {
-                    resolve({
-                        url: reader.result,
-                        name: file.name
-                    });
-                };
+                reader.onloadend = () => resolve({ url: reader.result, name: file.name });
                 reader.readAsDataURL(file);
-            });
-        });
-
+            })
+        );
         Promise.all(previewPromises).then(previews => {
             setImagePreviews(previews);
             setImageLoading(false);
@@ -42,130 +33,92 @@ function ProductForm({ product }) {
     }
 
     return (
-        <>
-            <Form method={method} encType="multipart/form-data" className="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
-                {data && data.errors && <ul className="mb-4 text-red-600">
+        <Form method={method} encType="multipart/form-data" className="bg-neutral-50 border border-neutral-200/80 p-5 sm:p-6 rounded-xl max-w-2xl mx-auto">
+            {data && data.errors && (
+                <ul className="mb-4 text-sm text-brand-600 bg-brand-50 border border-brand-100 p-3 rounded-lg">
                     {Object.entries(data.errors).map(([field, message]) => (
-                        <li key={field}>{message}</li>
+                        <li key={field}>• {message}</li>
                     ))}
-                </ul>}
-                <div className="mb-4">
-                    <label htmlFor="name" className="block text-gray-700 font-semibold mb-2">
-                        Product Name
-                    </label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        defaultValue={product ? product.name : ''}
-                        required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
+                </ul>
+            )}
+
+            <div className="mb-4">
+                <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                    Product Name
+                </label>
+                <input
+                    type="text" id="name" name="name"
+                    defaultValue={product ? product.name : ''}
+                    required className={inputClass}
+                />
+            </div>
+
+            <div className="mb-5">
+                <label htmlFor="images" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                    Product Images {!product && '*'}
+                </label>
+
+                <div className="mb-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {imageLoading ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="aspect-square bg-neutral-100 rounded-lg animate-pulse" />
+                        ))
+                    ) : imagePreviews.length > 0 ? (
+                        imagePreviews.map((p, i) => (
+                            <div key={i} className="relative aspect-square">
+                                <img src={p.url} alt={p.name} className="w-full h-full object-cover rounded-lg border border-neutral-200" />
+                            </div>
+                        ))
+                    ) : product?.imageIds && product.imageIds.length > 0 ? (
+                        product.imageIds.map((image, i) => (
+                            <div key={i} className="relative aspect-square">
+                                <img src={`${API_BASE}/images/${image._id}`} alt={product.name}
+                                    className="w-full h-full object-cover rounded-lg border border-neutral-200"
+                                    crossOrigin="anonymous" />
+                            </div>
+                        ))
+                    ) : (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="aspect-square bg-neutral-100 rounded-lg border-2 border-dashed border-neutral-200 flex items-center justify-center">
+                                <svg className="w-8 h-8 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        ))
+                    )}
                 </div>
 
-                <div className="mb-6">
-                    <label htmlFor="images" className="block text-gray-700 font-semibold mb-2">
-                        Product Images {!product && '*'}
-                    </label>
+                <input type="file" id="images" name="images" multiple accept="image/*"
+                    onChange={handleImageChange} className={inputClass} />
+                <p className="text-xs text-neutral-400 mt-1">
+                    Select up to 3 images (JPG, PNG, WebP — Max 5 MB each)
+                </p>
+            </div>
 
-                    {/* Image Preview Section */}
-                    <div className="mb-4 grid grid-cols-3 gap-4">
-                        {imageLoading ? (
-                            // Skeleton Loading
-                            [...Array(3)].map((_, index) => (
-                                <div key={index} className="aspect-square bg-gray-200 rounded-lg animate-pulse"></div>
-                            ))
-                        ) : imagePreviews.length > 0 ? (
-                            // Image Previews
-                            imagePreviews.map((preview, index) => (
-                                <div key={index} className="relative aspect-square">
-                                    <img
-                                        src={preview.url}
-                                        alt={preview.name}
-                                        className="w-full h-full object-cover rounded-lg border-2 border-gray-300"
-                                    />
-                                </div>
-                            ))
-                        ) : product?.imageIds && product.imageIds.length > 0 ? (
-                            // Existing Product Images
-                            product.imageIds.map((image, index) => (
-                                <div key={index} className="relative aspect-square">
-                                    <img
-                                        src={`${API_BASE}/images/${image._id}`}
-                                        alt={product.name}
-                                        className="w-full h-full object-cover rounded-lg border-2 border-gray-300"
-                                        crossOrigin="anonymous"
-                                    />
-                                </div>
-                            ))
-                        ) : (
-                            // Empty Skeleton State
-                            [...Array(3)].map((_, index) => (
-                                <div key={index} className="aspect-square bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-                                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                            ))
-                        )}
-                    </div>
+            <div className="mb-4">
+                <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                    Description
+                </label>
+                <textarea id="description" name="description"
+                    defaultValue={product ? product.description : ''} rows="4"
+                    className={inputClass} />
+            </div>
 
-                    <input
-                        type="file"
-                        id="images"
-                        name="images"
-                        multiple
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                    <p className="text-sm text-gray-500 mt-1">
-                        Select up to 3 images (JPG, PNG, WebP - Max 5MB each)
-                    </p>
-                </div>
+            <div className="mb-4">
+                <label htmlFor="price" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                    Price
+                </label>
+                <input type="number" id="price" name="price" step="0.01" min="0"
+                    defaultValue={product ? product.price : ''} className={inputClass} />
+            </div>
 
-                <div className="mb-4">
-                    <label htmlFor="description" className="block text-gray-700 font-semibold mb-2">
-                        Description *
-                    </label>
-                    <textarea
-                        id="description"
-                        name="description"
-                        defaultValue={product ? product.description : ''}
-                        //required
-                        rows="4"
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="price" className="block text-gray-700 font-semibold mb-2">
-                        Price *
-                    </label>
-                    <input
-                        type="number"
-                        id="price"
-                        name="price"
-                        step="0.01"
-                        min="0"
-                        defaultValue={product ? product.price : ''}
-                        //required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={navigation.state === "submitting"}
-                    className="mt-6 px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors w-full font-semibold disabled:bg-brand-300"
-                >
-                    {navigation.state === "submitting"
-                        ? "Submitting..."
-                        : product ? 'Update Product' : 'Create Product'
-                    }
-                </button>
-            </Form>
-        </>
+            <button type="submit" disabled={navigation.state === "submitting"}
+                className="w-full py-2.5 bg-neutral-900 text-neutral-50 rounded-lg hover:bg-neutral-800 transition font-medium text-sm disabled:opacity-50 mt-2">
+                {navigation.state === "submitting"
+                    ? "Submitting..."
+                    : product ? 'Update product' : 'Create product'}
+            </button>
+        </Form>
     );
 }
 

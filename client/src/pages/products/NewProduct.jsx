@@ -3,9 +3,9 @@ import ProductForm from "../../components/ProductForm";
 
 function NewProductPage() {
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Create New Product</h1>
-            <Link to="../" relative="path" className="text-brand-600 hover:underline mb-4 inline-block">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+            <h1 className="text-2xl font-semibold text-neutral-900 tracking-tight mb-6">Create new product</h1>
+            <Link to="../" relative="path" className="text-sm text-neutral-500 hover:text-neutral-800 transition-colors mb-4 inline-block">
                 ← Back to Products
             </Link>
             <ProductForm />

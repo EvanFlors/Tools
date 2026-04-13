@@ -21,9 +21,11 @@ function ErrorPage() {
     return (
         <>
             <MainNavigation />
+            <div className="pt-12">
             <PageContent title={title}>
-                <p className="text-lg text-gray-600">{message}</p>
+                <p className="text-sm text-neutral-500">{message}</p>
             </PageContent>
+            </div>
         </>
     );
 }

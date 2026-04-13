@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { Form, useNavigate, useNavigation, useActionData, redirect } from "react-router-dom";
 import { API_BASE } from "../config/api";
 
+const inputClass =
+  "w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-neutral-400 bg-neutral-50";
+
 function SaleForm({ sale }) {
     const data = useActionData();
     const navigate = useNavigate();
@@ -15,9 +18,6 @@ function SaleForm({ sale }) {
 
     const method = sale ? "put" : "post";
 
-    console.log("Form sale data:", sale);
-
-    // Initialize form values when sale data is available
     useEffect(() => {
         if (sale) {
             setSelectedCustomer(sale.customerId?._id || sale.customerId || "");
@@ -27,163 +27,78 @@ function SaleForm({ sale }) {
     }, [sale]);
 
     useEffect(() => {
-        // Fetch customers
         fetch(`${API_BASE}/admin/customers`, { credentials: "include" })
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to fetch customers');
-                return res.json();
-            })
-            .then(data => {
-                setCustomers(data.data || []);
-                console.log("Customers loaded:", data.data);
-            })
+            .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+            .then(data => setCustomers(data.data || []))
             .catch(err => console.error("Error fetching customers:", err));
 
-        // Fetch products
         fetch(`${API_BASE}/admin/products`, { credentials: "include" })
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to fetch products');
-                return res.json();
-            })
-            .then(data => {
-                setProducts(data.data || []);
-                console.log("Products loaded:", data.data);
-            })
+            .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+            .then(data => setProducts(data.data || []))
             .catch(err => console.error("Error fetching products:", err));
     }, []);
 
-    function cancelHandler() {
-        navigate(-1);
-    }
+    function cancelHandler() { navigate(-1); }
 
     return (
         <>
             <button
-                className="w-8 h-8 bg-brand-500 text-white rounded-full hover:bg-brand-600 active:scale-95 transition mb-4"
-                aria-label="Go Back"
-                onClick={cancelHandler}
-            >
-                ←
-            </button>
-            <Form method={method} className="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
-                {/* Display validation errors from Zod */}
+                className="w-7 h-7 bg-neutral-200 text-neutral-600 rounded-md hover:bg-neutral-300 transition mb-4 text-sm"
+                aria-label="Go Back" onClick={cancelHandler}
+            >←</button>
+
+            <Form method={method} className="bg-neutral-50 border border-neutral-200/80 p-5 sm:p-6 rounded-xl max-w-2xl mx-auto">
                 {data && data.errors && (
-                    <ul className="mb-4 text-red-600 bg-red-50 p-4 rounded">
+                    <ul className="mb-4 text-sm text-brand-600 bg-brand-50 border border-brand-100 p-3 rounded-lg">
                         {Object.entries(data.errors).map(([field, message]) => (
                             <li key={field}>• {message}</li>
                         ))}
                     </ul>
                 )}
-
-                {/* Display business logic errors from service */}
                 {data && data.error && (
-                    <div className="mb-4 text-red-600 bg-red-50 p-4 rounded">
-                        <p>⚠️ {data.error}</p>
+                    <div className="mb-4 text-sm text-brand-600 bg-brand-50 border border-brand-100 p-3 rounded-lg">
+                        {data.error}
                     </div>
                 )}
 
                 <div className="mb-4">
-                    <label htmlFor="customerId" className="block text-gray-700 font-semibold mb-2">
-                        Customer *
-                    </label>
-                    <select
-                        id="customerId"
-                        name="customerId"
-                        value={selectedCustomer}
-                        onChange={(e) => setSelectedCustomer(e.target.value)}
-                        // required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    >
+                    <label htmlFor="customerId" className="block text-sm font-medium text-neutral-700 mb-1.5">Customer *</label>
+                    <select id="customerId" name="customerId" value={selectedCustomer}
+                        onChange={(e) => setSelectedCustomer(e.target.value)} className={inputClass}>
                         <option value="">Select a customer</option>
-                        {customers.map((customer) => (
-                            <option key={customer._id} value={customer._id}>
-                                {customer.name}
-                            </option>
-                        ))}
+                        {customers.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
                     </select>
                 </div>
 
                 <div className="mb-4">
-                    <label htmlFor="productId" className="block text-gray-700 font-semibold mb-2">
-                        Product *
-                    </label>
-                    <select
-                        id="productId"
-                        name="productId"
-                        value={selectedProduct}
-                        onChange={(e) => setSelectedProduct(e.target.value)}
-                        // required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    >
+                    <label htmlFor="productId" className="block text-sm font-medium text-neutral-700 mb-1.5">Product *</label>
+                    <select id="productId" name="productId" value={selectedProduct}
+                        onChange={(e) => setSelectedProduct(e.target.value)} className={inputClass}>
                         <option value="">Select a product</option>
-                        {products.map((product) => (
-                            <option key={product._id} value={product._id}>
-                                {product.name} - ${product.price}
-                            </option>
-                        ))}
+                        {products.map((p) => <option key={p._id} value={p._id}>{p.name} - ${p.price}</option>)}
                     </select>
                 </div>
 
                 <div className="mb-4">
-                    <label htmlFor="totalAmount" className="block text-gray-700 font-semibold mb-2">
-                        Total Amount *
-                    </label>
-                    <input
-                        type="number"
-                        id="totalAmount"
-                        name="totalAmount"
-                        step="0.01"
-                        min="0"
-                        defaultValue={sale ? sale.totalAmount : ''}
-                        // required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
+                    <label htmlFor="totalAmount" className="block text-sm font-medium text-neutral-700 mb-1.5">Total Amount *</label>
+                    <input type="number" id="totalAmount" name="totalAmount" step="0.01" min="0"
+                        defaultValue={sale ? sale.totalAmount : ''} className={inputClass} />
                 </div>
 
                 <div className="mb-4">
-                    <label htmlFor="paymentType" className="block text-gray-700 font-semibold mb-2">
-                        Payment Type *
-                    </label>
-                    <select
-                        id="paymentType"
-                        name="paymentType"
-                        value={paymentType}
-                        onChange={(e) => {
-                            console.log("Payment type changed to:", e.target.value);
-                            setPaymentType(e.target.value);
-                        }}
-                        // required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    >
+                    <label htmlFor="paymentType" className="block text-sm font-medium text-neutral-700 mb-1.5">Payment Type *</label>
+                    <select id="paymentType" name="paymentType" value={paymentType}
+                        onChange={(e) => setPaymentType(e.target.value)} className={inputClass}>
                         <option value="full">Full Payment</option>
                         <option value="installments">Installments</option>
                     </select>
                 </div>
-                {/* <div className="mb-4">
-                    <label htmlFor="status" className="block text-gray-700 font-semibold mb-2">
-                        Status *
-                    </label>
-                    <select
-                        id="status"
-                        name="status"
-                        defaultValue={sale ? sale.status : 'active'}
-                        required
-                        className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    >
-                        <option value="active">Active</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                </div> */}
 
-                <button
-                    type="submit"
-                    disabled={navigation.state === "submitting"}
-                    className="mt-6 px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors w-full font-semibold disabled:bg-brand-300"
-                >
+                <button type="submit" disabled={navigation.state === "submitting"}
+                    className="w-full py-2.5 bg-neutral-900 text-neutral-50 rounded-lg hover:bg-neutral-800 transition font-medium text-sm disabled:opacity-50 mt-2">
                     {navigation.state === "submitting"
                         ? "Submitting..."
-                        : sale ? 'Update Sale' : 'Create Sale'
-                    }
+                        : sale ? 'Update sale' : 'Create sale'}
                 </button>
             </Form>
         </>
