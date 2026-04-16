@@ -14,9 +14,11 @@ function ProductsGrid({ products, linkPrefix }) {
               className="bg-neutral-50 rounded-xl overflow-hidden border border-neutral-200/80 hover:border-neutral-300 transition-all group"
             >
               {/* Clickable image area */}
-              <button
-                type="button"
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={() => setSelectedProduct(product)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSelectedProduct(product); }}
                 className="w-full cursor-pointer"
                 aria-label={`View images for ${product.name}`}
               >
@@ -25,7 +27,7 @@ function ProductsGrid({ products, linkPrefix }) {
                   alt={product.name}
                   height="h-56"
                 />
-              </button>
+              </div>
 
               <div className="px-4 pt-3.5 pb-4">
                 <h2 className="text-base font-semibold text-neutral-900 leading-snug">

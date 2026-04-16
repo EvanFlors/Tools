@@ -3,8 +3,9 @@ import { createBrowserRouter, RouterProvider, redirect } from "react-router-dom"
 import RootLayout from "./pages/Root";
 import ErrorPage from "./pages/Error";
 import PortalErrorPage from "./pages/PortalError";
-import HomePage from "./pages/Home";
+import DashboardPage, { dashboardLoader } from "./pages/Dashboard";
 import ProfilePage, { profileLoader, profileAction } from "./pages/Profile";
+import PasswordResetPage from "./pages/PasswordReset";
 
 import LoginLayout from "./pages/login/LoginLayout";
 import LoginPage, { loginAction, loginLoader } from "./pages/Login";
@@ -33,17 +34,24 @@ import NewPaymentPage from "./pages/payments/NewPayment";
 import EditPaymentPage from "./pages/payments/EditPayment";
 import { action as manipulatePaymentAction } from "./components/PaymentForm";
 
+import UsersPage, { loader as UsersLoader } from "./pages/users/Users";
+import UserDetailPage, { UserDetailLoader } from "./pages/users/UserDetail";
+import NewUserPage from "./pages/users/NewUser";
+import EditUserPage from "./pages/users/EditUser";
+import { action as manipulateUserAction } from "./components/UserForm";
+
 // Customer portal
 import PortalLayout from "./pages/portal/PortalLayout";
 import PortalProductsPage, { loader as PortalProductsLoader } from "./pages/portal/PortalProducts";
 import PortalProductDetailPage, { loader as PortalProductDetailLoader } from "./pages/portal/PortalProductDetail";
 import PortalSalesPage, { loader as PortalSalesLoader } from "./pages/portal/PortalSales";
 import PortalSaleDetailPage, { loader as PortalSaleDetailLoader } from "./pages/portal/PortalSaleDetail";
+import PortalRewardsPage, { loader as PortalRewardsLoader } from "./pages/portal/PortalRewards";
 
 import { getAuthUser } from "./utils/auth";
 
 /**
- * Admin root loader: requires authentication AND admin role.
+ * Admin/Owner root loader: requires authentication AND admin/owner role.
  * Customers get redirected to /portal.
  */
 async function adminRootLoader() {
@@ -55,7 +63,6 @@ async function adminRootLoader() {
 
 /**
  * Customer portal loader: requires authentication AND customer role.
- * Admins get redirected to /.
  */
 async function portalRootLoader() {
   const user = await getAuthUser();
@@ -76,6 +83,10 @@ const router = createBrowserRouter([
         action: loginAction,
       },
     ],
+  },
+  {
+    path: "/password-reset",
+    element: <PasswordResetPage />,
   },
   // ─── Customer portal ───
   {
@@ -105,9 +116,14 @@ const router = createBrowserRouter([
         element: <PortalSaleDetailPage />,
         loader: PortalSaleDetailLoader,
       },
+      {
+        path: "rewards",
+        element: <PortalRewardsPage />,
+        loader: PortalRewardsLoader,
+      },
     ],
   },
-  // ─── Admin dashboard ───
+  // ─── Admin/Owner dashboard ───
   {
     path: "/",
     element: <RootLayout />,
@@ -117,7 +133,8 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: <DashboardPage />,
+        loader: dashboardLoader,
       },
       {
         path: "/profile",
@@ -233,16 +250,41 @@ const router = createBrowserRouter([
             action: manipulateProductAction
           }
         ]
+      },
+      {
+        path: "/users",
+        element: <UsersPage />,
+        loader: UsersLoader
+      },
+      {
+        path: "/users/new",
+        element: <NewUserPage />,
+        action: manipulateUserAction
+      },
+      {
+        path: "/users/:userId",
+        id: "user-detail",
+        loader: UserDetailLoader,
+        children: [
+          {
+            index: true,
+            element: <UserDetailPage />,
+            action: manipulateUserAction
+          },
+          {
+            path: "edit",
+            element: <EditUserPage />,
+            loader: UserDetailLoader,
+            action: manipulateUserAction
+          }
+        ]
       }
     ]
   },
 ]);
 
 function App() {
-
-  return (
-    <RouterProvider router={router} />
-  )
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;

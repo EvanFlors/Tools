@@ -59,7 +59,7 @@ export default function ImageCarousel({
         <img
           src={`${API_BASE}/images/${ids[current]}`}
           alt={`${alt} ${current + 1}`}
-          className="w-full h-full object-contain transition-opacity duration-300"
+          className="w-full h-full object-contain transition-opacity duration-300 bg-white "
           crossOrigin="anonymous"
           onError={(e) => {
             e.target.style.display = "none";

@@ -14,7 +14,6 @@ function SaleForm({ sale }) {
     const [products, setProducts] = useState([]);
     const [selectedCustomer, setSelectedCustomer] = useState("");
     const [selectedProduct, setSelectedProduct] = useState("");
-    const [paymentType, setPaymentType] = useState("full");
 
     const method = sale ? "put" : "post";
 
@@ -22,7 +21,6 @@ function SaleForm({ sale }) {
         if (sale) {
             setSelectedCustomer(sale.customerId?._id || sale.customerId || "");
             setSelectedProduct(sale.productId?._id || sale.productId || "");
-            setPaymentType(sale.paymentType || "full");
         }
     }, [sale]);
 
@@ -80,18 +78,12 @@ function SaleForm({ sale }) {
                 </div>
 
                 <div className="mb-4">
-                    <label htmlFor="totalAmount" className="block text-sm font-medium text-neutral-700 mb-1.5">Total Amount *</label>
+                    <label htmlFor="totalAmount" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                        Total Amount
+                        <span className="text-xs text-neutral-400 font-normal ml-1">(leave empty to use product price)</span>
+                    </label>
                     <input type="number" id="totalAmount" name="totalAmount" step="0.01" min="0"
                         defaultValue={sale ? sale.totalAmount : ''} className={inputClass} />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="paymentType" className="block text-sm font-medium text-neutral-700 mb-1.5">Payment Type *</label>
-                    <select id="paymentType" name="paymentType" value={paymentType}
-                        onChange={(e) => setPaymentType(e.target.value)} className={inputClass}>
-                        <option value="full">Full Payment</option>
-                        <option value="installments">Installments</option>
-                    </select>
                 </div>
 
                 <button type="submit" disabled={navigation.state === "submitting"}
@@ -111,12 +103,9 @@ export async function action({ request, params }) {
     const method = request.method.toUpperCase();
     const formData = await request.formData();
 
-    // Create regular JSON object
     const saleData = {
         customerId: formData.get("customerId"),
         productId: formData.get("productId"),
-        paymentType: formData.get("paymentType"),
-        status: formData.get("status"),
     };
 
     const totalAmountRaw = formData.get("totalAmount");
@@ -146,8 +135,6 @@ export async function action({ request, params }) {
         body: method !== "DELETE" ? JSON.stringify(saleData) : undefined,
     });
 
-    console.log("Response status:", response.status);
-
     if (response.status === 422 || response.status === 400) {
         const resData = await response.json();
         return resData;
@@ -170,7 +157,6 @@ export async function action({ request, params }) {
     if (method === "PUT") {
         return redirect(`/sales/${saleId}`);
     } else {
-        console.log("Response data:", resData);
         return redirect(`/sales`);
     }
 }

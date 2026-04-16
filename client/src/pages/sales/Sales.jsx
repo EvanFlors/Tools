@@ -53,7 +53,7 @@ function SalesPage() {
                                     <h3 className="text-base font-semibold text-neutral-900">{sale.customerId?.name || 'N/A'}</h3>
                                 </div>
                                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                    sale.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-neutral-200 text-neutral-600'
+                                    sale.status === 'active' ? 'bg-green-100 text-green-700' : sale.status === 'cancelled' ? 'bg-brand-100 text-brand-700' : 'bg-neutral-200 text-neutral-600'
                                 }`}>
                                     {sale.status}
                                 </span>
@@ -87,16 +87,20 @@ function SalesPage() {
                                         ${typeof sale.remainingBalance === 'number' ? sale.remainingBalance.toFixed(2) : sale.remainingBalance}
                                     </span>
                                 </div>
-                                <div className="flex justify-between items-center pt-1">
-                                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                        sale.paymentType === 'full' ? 'bg-neutral-200 text-neutral-700' : 'bg-yellow-50 text-yellow-700'
-                                    }`}>
-                                        {sale.paymentType}
-                                    </span>
-                                    <span className="text-xs text-neutral-400">
-                                        {new Date(sale.createdAt).toLocaleDateString()}
-                                    </span>
-                                </div>
+                                {(() => {
+                                    const pct = sale.totalAmount > 0 ? Math.round(((sale.totalAmount - sale.remainingBalance) / sale.totalAmount) * 100) : 0;
+                                    return (
+                                        <div className="pt-1">
+                                            <div className="flex justify-between text-xs text-neutral-400 mb-1">
+                                                <span>{pct}% paid</span>
+                                                <span>{new Date(sale.createdAt).toLocaleDateString()}</span>
+                                            </div>
+                                            <div className="w-full bg-neutral-200 rounded-full h-1.5">
+                                                <div className="bg-green-500 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </Link>
                     ))}

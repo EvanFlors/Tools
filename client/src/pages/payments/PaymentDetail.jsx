@@ -148,17 +148,9 @@ function PaymentDetailPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-neutral-400">Payment Type</p>
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                    sale.paymentType === "full" ? "bg-neutral-200 text-neutral-700" : "bg-yellow-50 text-yellow-700"
-                  }`}>
-                    {sale.paymentType}
-                  </span>
-                </div>
-                <div>
                   <p className="text-xs text-neutral-400">Sale Status</p>
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                    sale.status === "active" ? "bg-green-100 text-green-700" : "bg-neutral-200 text-neutral-600"
+                    sale.status === "active" ? "bg-green-100 text-green-700" : sale.status === "cancelled" ? "bg-brand-100 text-brand-700" : "bg-neutral-200 text-neutral-600"
                   }`}>
                     {sale.status}
                   </span>

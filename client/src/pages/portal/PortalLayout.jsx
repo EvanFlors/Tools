@@ -33,6 +33,12 @@ function PortalLayout() {
                   My Sales
                 </NavLink>
               </li>
+              <li>
+                <NavLink to="/portal/rewards"
+                  className={({ isActive }) => isActive ? linkActive : linkInactive}>
+                  Rewards
+                </NavLink>
+              </li>
             </ul>
 
             <div className="hidden md:block">
@@ -68,6 +74,10 @@ function PortalLayout() {
               <NavLink to="/portal/sales" onClick={() => setMenuOpen(false)}
                 className={({ isActive }) => `block ${isActive ? linkActive : linkInactive}`}>
                 My Sales
+              </NavLink>
+              <NavLink to="/portal/rewards" onClick={() => setMenuOpen(false)}
+                className={({ isActive }) => `block ${isActive ? linkActive : linkInactive}`}>
+                Rewards
               </NavLink>
               <div className="border-t border-neutral-200 pt-2 mt-2">
                 <button onClick={logout}

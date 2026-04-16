@@ -128,17 +128,9 @@ function PaymentForm({ payment, saleId: propSaleId }) {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-neutral-400">Payment Type</p>
-                <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                  saleInfo.paymentType === "full" ? "bg-neutral-200 text-neutral-700" : "bg-yellow-50 text-yellow-700"
-                }`}>
-                  {saleInfo.paymentType}
-                </span>
-              </div>
-              <div>
                 <p className="text-xs text-neutral-400">Status</p>
                 <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                  saleInfo.status === "active" ? "bg-green-100 text-green-700" : "bg-neutral-200 text-neutral-600"
+                  saleInfo.status === "active" ? "bg-green-100 text-green-700" : saleInfo.status === "cancelled" ? "bg-brand-100 text-brand-700" : "bg-neutral-200 text-neutral-600"
                 }`}>
                   {saleInfo.status}
                 </span>
@@ -235,6 +227,7 @@ export async function action({ request, params }) {
   if (method === "PUT") {
     return redirect(`/payments/${paymentId}`);
   } else {
-    return redirect(`/payments/${resData._id}`);
+    const id = resData.data?._id || resData._id;
+    return redirect(`/payments/${id}`);
   }
 }

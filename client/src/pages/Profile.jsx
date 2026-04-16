@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Form,
   Link,
@@ -13,6 +13,8 @@ const inputClass =
   "w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-neutral-400 bg-neutral-50";
 
 function ProfilePage() {
+  const formRef = useRef();
+
   const profile = useLoaderData();
   const actionData = useActionData();
   const navigate = useNavigate();
@@ -32,6 +34,15 @@ function ProfilePage() {
   const [deleteError, setDeleteError] = useState(null);
 
   const handle = (setter) => (e) => setter(e.target.value);
+
+  // Reset password fields after successful update
+  useEffect(() => {
+    if (actionData?.status === "success") {
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    }
+  }, [actionData]);
 
   const hasProfileChanges =
     username !== (profile.username || "") ||
@@ -100,7 +111,7 @@ function ProfilePage() {
           </ul>
         )}
 
-        <Form method="put" className="space-y-4">
+        <Form ref={formRef} method="put" className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-neutral-700 mb-1.5">Username</label>
             <input type="text" id="username" name="username" value={username} onChange={handle(setUsername)} className={inputClass} />
@@ -225,5 +236,5 @@ export async function profileAction({ request }) {
     return { error: resData.error || "Failed to update profile." };
   }
 
-  return { message: "Profile updated successfully!" };
+  return { status: "success", message: "Profile updated successfully!" };
 }

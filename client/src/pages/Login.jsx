@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Form, useNavigation, useActionData, useLoaderData, redirect } from "react-router-dom";
+import { Form, Link, useNavigation, useActionData, useLoaderData, redirect } from "react-router-dom";
 import { getAuthUser } from "../utils/auth";
 import { API_BASE } from "../config/api";
 import { useToast, ToastMessage } from "../components/Toast";
@@ -158,6 +158,14 @@ function LoginPage() {
                 : "Login as Customer"}
             </button>
           </Form>
+
+          {mode === "admin" && (
+            <div className="mt-3 text-center">
+              <Link to="/password-reset" className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors">
+                Forgot password?
+              </Link>
+            </div>
+          )}
 
           <div className="mt-5 text-center">
             <button

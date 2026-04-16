@@ -95,9 +95,21 @@ function ProductDetailPage() {
 
                     <p className="text-neutral-600 text-sm leading-relaxed mb-5">{productData.description}</p>
 
-                    <p className="text-2xl font-semibold text-neutral-900 mb-6">
-                        ${typeof productData.price === 'number' ? productData.price.toFixed(2) : productData.price}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-3 mb-5">
+                        <p className="text-2xl font-semibold text-neutral-900">
+                            ${typeof productData.price === 'number' ? productData.price.toFixed(2) : productData.price}
+                        </p>
+                        {productData.category && (
+                            <span className="px-2.5 py-0.5 bg-neutral-200 text-neutral-700 rounded-full text-xs font-medium">
+                                {productData.category}
+                            </span>
+                        )}
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            productData.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-brand-100 text-brand-700'
+                        }`}>
+                            {productData.stock > 0 ? `${productData.stock} in stock` : 'Out of stock'}
+                        </span>
+                    </div>
 
                     <button
                         onClick={navigateHandler}

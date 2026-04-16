@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useRouteLoaderData } from "react-router-dom";
 import { logout } from "../utils/auth";
 
 const linkBase =
@@ -9,6 +9,8 @@ const linkInactive = `${linkBase} text-neutral-500 hover:bg-neutral-150 hover:te
 
 function MainNavigation() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const user = useRouteLoaderData("root");
+  const isOwner = user?.role === "owner";
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-neutral-50 border-b border-neutral-200">
@@ -22,6 +24,12 @@ function MainNavigation() {
 
         {/* Desktop Links */}
         <ul className="hidden md:flex items-center gap-0.5">
+          <li>
+            <NavLink to="/" end
+              className={({ isActive }) => (isActive ? linkActive : linkInactive)}>
+              Dashboard
+            </NavLink>
+          </li>
           <li>
             <NavLink to="/products"
               className={({ isActive }) => (isActive ? linkActive : linkInactive)}>
@@ -46,6 +54,14 @@ function MainNavigation() {
               Payments
             </NavLink>
           </li>
+          {isOwner && (
+            <li>
+              <NavLink to="/users"
+                className={({ isActive }) => (isActive ? linkActive : linkInactive)}>
+                Users
+              </NavLink>
+            </li>
+          )}
         </ul>
 
         {/* Desktop Right side */}
@@ -87,6 +103,10 @@ function MainNavigation() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden border-t border-neutral-200 px-4 pb-3 pt-2 space-y-0.5 bg-neutral-50">
+          <NavLink to="/" end onClick={() => setMenuOpen(false)}
+            className={({ isActive }) => `block ${isActive ? linkActive : linkInactive}`}>
+            Dashboard
+          </NavLink>
           <NavLink to="/products" onClick={() => setMenuOpen(false)}
             className={({ isActive }) => `block ${isActive ? linkActive : linkInactive}`}>
             Products
@@ -103,6 +123,12 @@ function MainNavigation() {
             className={({ isActive }) => `block ${isActive ? linkActive : linkInactive}`}>
             Payments
           </NavLink>
+          {isOwner && (
+            <NavLink to="/users" onClick={() => setMenuOpen(false)}
+              className={({ isActive }) => `block ${isActive ? linkActive : linkInactive}`}>
+              Users
+            </NavLink>
+          )}
           <div className="border-t border-neutral-200 pt-2 mt-2 flex items-center gap-1">
             <NavLink to="/profile" onClick={() => setMenuOpen(false)}
               className={({ isActive }) =>

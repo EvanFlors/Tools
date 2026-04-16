@@ -31,7 +31,7 @@ function PortalSaleDetailPage() {
             <div>
               <h1 className="text-xl font-semibold text-neutral-900 mb-2 tracking-tight">Sale Details</h1>
               <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                sale.status === "active" ? "bg-green-100 text-green-700" : "bg-neutral-200 text-neutral-600"
+                sale.status === "active" ? "bg-green-100 text-green-700" : sale.status === "cancelled" ? "bg-brand-100 text-brand-700" : "bg-neutral-200 text-neutral-600"
               }`}>
                 {sale.status}
               </span>
@@ -65,7 +65,7 @@ function PortalSaleDetailPage() {
           {/* Payment Summary */}
           <div className="bg-neutral-100 border border-neutral-200/60 rounded-lg p-5 mb-6">
             <h2 className="text-xs font-medium text-neutral-500 mb-4">Payment Summary</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-4">
               <div>
                 <p className="text-xs text-neutral-400">Total Amount</p>
                 <p className="text-2xl font-semibold text-neutral-900">
@@ -74,19 +74,25 @@ function PortalSaleDetailPage() {
               </div>
               <div>
                 <p className="text-xs text-neutral-400">Remaining Balance</p>
-                <p className="text-2xl font-semibold text-neutral-900">
+                <p className="text-2xl font-semibold text-brand-600">
                   ${typeof sale.remainingBalance === "number" ? sale.remainingBalance.toFixed(2) : sale.remainingBalance}
                 </p>
               </div>
-              <div>
-                <p className="text-xs text-neutral-400">Payment Type</p>
-                <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${
-                  sale.paymentType === "full" ? "bg-neutral-200 text-neutral-700" : "bg-yellow-100 text-yellow-700"
-                }`}>
-                  {sale.paymentType}
-                </span>
-              </div>
             </div>
+            {(() => {
+              const pct = sale.totalAmount > 0 ? Math.round(((sale.totalAmount - sale.remainingBalance) / sale.totalAmount) * 100) : 0;
+              return (
+                <div>
+                  <div className="flex justify-between text-xs text-neutral-500 mb-1">
+                    <span>{pct}% paid</span>
+                    <span>${typeof sale.totalAmount === "number" ? (sale.totalAmount - sale.remainingBalance).toFixed(2) : "—"} of ${typeof sale.totalAmount === "number" ? sale.totalAmount.toFixed(2) : sale.totalAmount}</span>
+                  </div>
+                  <div className="w-full bg-neutral-200 rounded-full h-2">
+                    <div className="bg-green-500 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Payment History */}

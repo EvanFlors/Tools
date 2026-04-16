@@ -112,12 +112,34 @@ function ProductForm({ product }) {
                     defaultValue={product ? product.price : ''} className={inputClass} />
             </div>
 
-            <button type="submit" disabled={navigation.state === "submitting"}
-                className="w-full py-2.5 bg-neutral-900 text-neutral-50 rounded-lg hover:bg-neutral-800 transition font-medium text-sm disabled:opacity-50 mt-2">
-                {navigation.state === "submitting"
-                    ? "Submitting..."
-                    : product ? 'Update product' : 'Create product'}
-            </button>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label htmlFor="category" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                        Category
+                    </label>
+                    <input type="text" id="category" name="category"
+                        defaultValue={product ? product.category : 'General'} className={inputClass} />
+                </div>
+                <div>
+                    <label htmlFor="stock" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                        Stock
+                    </label>
+                    <input type="number" id="stock" name="stock" min="0" step="1"
+                        defaultValue={product ? product.stock : 0} className={inputClass} />
+                </div>
+            </div>
+
+            <div className="flex items-center gap-3 mt-2">
+                <button type="submit" disabled={navigation.state === "submitting"}
+                    className="w-full py-2.5 bg-neutral-900 text-neutral-50 rounded-lg hover:bg-neutral-800 transition font-medium text-sm disabled:opacity-50">
+                    {navigation.state === "submitting"
+                        ? "Submitting..."
+                        : product ? 'Update product' : 'Create product'}
+                </button>
+                <button type="button" onClick={() => window.history.back()} className="w-full py-2.5 text-sm border border-neutral-300 rounded-lg hover:border-neutral-400 transition-colors font-medium">
+                    Cancel
+                </button>
+            </div>
         </Form>
     );
 }
@@ -134,6 +156,8 @@ export async function action({ request, params }) {
     uploadData.append("name", formData.get("name"));
     uploadData.append("description", formData.get("description"));
     uploadData.append("price", formData.get("price"));
+    uploadData.append("category", formData.get("category") || "General");
+    uploadData.append("stock", formData.get("stock") || "0");
 
     // Handle multiple image files
     const imageFiles = formData.getAll("images");
