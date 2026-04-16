@@ -1,9 +1,10 @@
 import Audit from "../../domain/models/audit.model.js";
 import Payment from "../../domain/models/payment.model.js";
 import Sale from "../../domain/models/sale.model.js";
+import CouponService from "./coupon.service.js";
 
 class PaymentService {
-  static async create({ saleId, amount, userId }) {
+  static async create({ saleId, amount, userId, couponId }) {
     const sale = await Sale.findOne({ _id: saleId, userId });
 
     if (!sale) throw new Error("Sale not found");
@@ -56,7 +57,18 @@ class PaymentService {
       },
     });
 
-    return payment;
+    // If a coupon was used, mark it
+    if (couponId) {
+      await CouponService.useCoupon(couponId, payment._id, userId);
+    }
+
+    // Check if customer earned new reward coupons
+    const generatedCoupons = await CouponService.checkAndGenerateCoupons(
+      sale.customerId,
+      userId
+    );
+
+    return { payment, generatedCoupons };
   }
 
   static async findAll(userId) {

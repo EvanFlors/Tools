@@ -31,6 +31,12 @@ export const createPaymentSchema = z.object({
       .positive("Amount must be greater than 0")
       .max(1000000, "Amount must be less than 1,000,000")
   ),
+
+  couponId: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid coupon ID format")
+    .optional()
+    .nullable(),
 });
 
 export const updatePaymentSchema = z.object({

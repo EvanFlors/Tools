@@ -36,6 +36,8 @@ class ProductService {
       name: data.name,
       price: data.price,
       description: data.description,
+      category: data.category || "General",
+      stock: data.stock || 0,
       imageIds,
       userId,
     });
@@ -43,12 +45,50 @@ class ProductService {
     return product.populate("imageIds");
   }
 
-  static async findAll(userId) {
-    const products = await Product.find({ userId, deletedAt: null })
+  static async findAll(userId, filters = {}) {
+    const query = { userId, deletedAt: null };
+
+    // Text search
+    if (filters.search) {
+      query.$or = [
+        { name: { $regex: filters.search, $options: "i" } },
+        { description: { $regex: filters.search, $options: "i" } },
+        { category: { $regex: filters.search, $options: "i" } },
+      ];
+    }
+
+    // Category filter
+    if (filters.category) {
+      query.category = filters.category;
+    }
+
+    // Price range
+    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+      query.price = {};
+      if (filters.minPrice !== undefined)
+        query.price.$gte = Number(filters.minPrice);
+      if (filters.maxPrice !== undefined)
+        query.price.$lte = Number(filters.maxPrice);
+    }
+
+    // Stock availability
+    if (filters.inStock === "true") {
+      query.stock = { $gt: 0 };
+    }
+
+    const products = await Product.find(query)
       .populate("imageIds")
+      .sort({ createdAt: -1 })
       .lean();
 
     return products;
+  }
+
+  /**
+   * Get distinct categories for filter UI.
+   */
+  static async getCategories(userId) {
+    return Product.distinct("category", { userId, deletedAt: null });
   }
 
   static async findById(id, userId) {
@@ -120,6 +160,14 @@ class ProductService {
 
     if (newData.description !== undefined) {
       product.description = newData.description;
+    }
+
+    if (newData.category !== undefined) {
+      product.category = newData.category;
+    }
+
+    if (newData.stock !== undefined) {
+      product.stock = newData.stock;
     }
 
     await product.save();

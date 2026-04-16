@@ -6,25 +6,32 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
       unique: true,
-      sparse: true
+      sparse: true,
     },
     phone: {
       type: String,
       unique: true,
-      sparse: true
+      sparse: true,
+    },
+    email: {
+      type: String,
+      unique: true,
+      sparse: true,
+      lowercase: true,
+      trim: true,
     },
     passwordHash: {
       type: String,
-      required: true
+      required: true,
     },
     role: {
       type: String,
-      enum: ["admin", "customer"],
-      required: true
+      enum: ["owner", "admin", "customer"],
+      required: true,
     },
     refreshToken: {
-      type: String
-    }
+      type: String,
+    },
   },
   { timestamps: true }
 );

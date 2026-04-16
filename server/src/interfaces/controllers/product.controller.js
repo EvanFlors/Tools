@@ -46,12 +46,29 @@ const createProduct = async (req, res, next) => {
 
 const getProducts = async (req, res, next) => {
   try {
-    const products = await ProductService.findAll(req.user.id);
+    const filters = {
+      search: req.query.search,
+      category: req.query.category,
+      minPrice: req.query.minPrice,
+      maxPrice: req.query.maxPrice,
+      inStock: req.query.inStock,
+    };
+
+    const products = await ProductService.findAll(req.user.id, filters);
 
     return res.status(200).json({
       message: "Products retrieved successfully",
       data: products,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getCategories = async (req, res, next) => {
+  try {
+    const categories = await ProductService.getCategories(req.user.id);
+    res.json({ data: categories });
   } catch (error) {
     next(error);
   }
@@ -140,6 +157,7 @@ export default {
   createProduct,
   getProducts,
   getProduct,
+  getCategories,
   updateProduct,
   deleteProduct,
   removeProductImage,

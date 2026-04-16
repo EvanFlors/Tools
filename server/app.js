@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import corsConfig from "./src/config/cors.js";
+import { apiLimiter } from "./src/interfaces/middlewares/rateLimit.middleware.js";
 
 import authenticate from "./src/interfaces/middlewares/auth.middleware.js";
 import errorMiddleware from "./src/interfaces/middlewares/error.middleware.js";
@@ -27,6 +28,9 @@ app.use(express.json({ limit: "10kb" }));
 
 // CORS
 app.use(corsConfig);
+
+// Global rate limiting
+app.use(apiLimiter);
 
 // Cookie parsing
 app.use(cookieParser());

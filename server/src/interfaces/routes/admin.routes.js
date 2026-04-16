@@ -3,8 +3,11 @@ import {
   handleMultipleUpload,
   handleUpload,
 } from "../middlewares/image.middleware.js";
+import authorize from "../middlewares/role.middleware.js";
 
+import couponController from "../controllers/coupon.controller.js";
 import customerController from "../controllers/customer.controller.js";
+import dashboardController from "../controllers/dashboard.controller.js";
 import imageController from "../controllers/image.controller.js";
 import paymentController from "../controllers/payment.controller.js";
 import productController from "../controllers/product.controller.js";
@@ -14,22 +17,28 @@ import userController from "../controllers/user.controller.js";
 
 const router = express.Router();
 
+// Dashboard
+router.get("/dashboard", dashboardController.getMetrics);
+
 // Profile (authenticated user's own data)
 router.get("/profile", profileController.getProfile);
 router.put("/profile", profileController.updateProfile);
 router.delete("/profile", profileController.deleteProfile);
 
-router.post("/users", userController.createUser);
-router.get("/users", userController.getUsers);
-router.get("/users/:id", userController.getUser);
-router.put("/users/:id", userController.updateUser);
-router.delete("/users/:id", userController.deleteUser);
+// User management — Owner only
+router.post("/users", authorize(["owner"]), userController.createUser);
+router.get("/users", authorize(["owner"]), userController.getUsers);
+router.get("/users/:id", authorize(["owner"]), userController.getUser);
+router.put("/users/:id", authorize(["owner"]), userController.updateUser);
+router.delete("/users/:id", authorize(["owner"]), userController.deleteUser);
 
 router.post("/customers", customerController.createCustomer);
 router.get("/customers", customerController.getCustomers);
 router.get("/customers/:id", customerController.getCustomer);
 router.put("/customers/:id", customerController.updateCustomer);
 router.delete("/customers/:id", customerController.deleteCustomer);
+
+router.get("/products/categories", productController.getCategories);
 
 router.post(
   "/products",
@@ -73,5 +82,12 @@ router.post(
 );
 router.get("/image/:id", imageController.getImage);
 router.delete("/image/:id", imageController.deleteProductImage);
+
+// Coupons
+router.get("/coupons", couponController.getAdminCoupons);
+router.get(
+  "/coupons/customer/:customerId",
+  couponController.getCustomerCoupons
+);
 
 export default router;

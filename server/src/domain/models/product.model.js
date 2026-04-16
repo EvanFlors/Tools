@@ -18,6 +18,16 @@ const productSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    category: {
+      type: String,
+      trim: true,
+      default: "General",
+    },
+    stock: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     imageIds: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -35,6 +45,7 @@ const productSchema = new mongoose.Schema(
 );
 
 productSchema.index({ deletedAt: 1 });
+productSchema.index({ name: "text", description: "text", category: "text" });
 
 productSchema.plugin(softDeletePlugin);
 

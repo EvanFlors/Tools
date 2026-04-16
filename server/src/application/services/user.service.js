@@ -11,34 +11,58 @@ class UserService {
   }
 
   static async create(userData) {
-    const existing = await User.findOne({
-      $or: [{ username: userData.username }, { phone: userData.phone }],
-    });
-
-    if (existing) {
-      throw new Error("User with this username or phone already exists");
+    // Only allow creating admin users through this service
+    if (userData.role && userData.role !== "admin") {
+      throw new Error("Only admin users can be created through this endpoint");
     }
 
-    // const hashedPassword = await this.hashPassword(userData.password);
+    const orConditions = [{ username: userData.username }];
+    if (userData.phone) orConditions.push({ phone: userData.phone });
+    if (userData.email) orConditions.push({ email: userData.email });
+
+    const existing = await User.findOne({ $or: orConditions });
+    if (existing) {
+      throw new Error("User with this username, phone or email already exists");
+    }
+
+    if (!userData.password) {
+      throw new Error("Password is required");
+    }
+
+    const hashedPassword = await this.hashPassword(userData.password);
 
     return User.create({
       username: userData.username,
-      // passwordHash: hashedPassword,
-      role: userData.role || "customer",
+      passwordHash: hashedPassword,
+      role: "admin",
       phone: userData.phone,
+      email: userData.email,
     });
   }
 
   static async findAll() {
-    return User.find().lean();
+    // Return only admin users (not owners or customers)
+    return User.find({ role: "admin" })
+      .select("-passwordHash -refreshToken")
+      .lean();
   }
 
   static async findById(id) {
-    return User.findById(id);
+    const user = await User.findById(id).select("-passwordHash -refreshToken");
+    if (!user) throw new Error("User not found");
+    return user;
   }
 
   static async updateById(id, userData) {
-    const allowedFields = ["username", "phone", "role"];
+    const user = await User.findById(id);
+    if (!user) throw new Error("User not found");
+
+    // Prevent changing role to owner
+    if (userData.role && userData.role === "owner") {
+      throw new Error("Cannot assign owner role");
+    }
+
+    const allowedFields = ["username", "phone", "email"];
     const update = {};
 
     for (const key of allowedFields) {
@@ -47,11 +71,13 @@ class UserService {
       }
     }
 
-    // if (userData.password) {
-    //   update.passwordHash = await this.hashPassword(userData.password);
-    // }
+    if (userData.password) {
+      update.passwordHash = await this.hashPassword(userData.password);
+    }
 
-    return User.findByIdAndUpdate(id, { $set: update }, { new: true });
+    return User.findByIdAndUpdate(id, { $set: update }, { new: true }).select(
+      "-passwordHash -refreshToken"
+    );
   }
 
   static async deleteById(id) {
@@ -59,6 +85,10 @@ class UserService {
 
     if (!user) {
       throw new Error("User not found");
+    }
+
+    if (user.role === "owner") {
+      throw new Error("Cannot delete the owner account");
     }
 
     await Sale.updateMany(

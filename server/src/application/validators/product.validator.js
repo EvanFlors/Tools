@@ -42,6 +42,23 @@ export const createProductSchema = z.object({
     .trim(),
 
   price: priceSchema,
+
+  category: z
+    .string()
+    .max(50, "Category must be less than 50 characters")
+    .trim()
+    .optional()
+    .default("General"),
+
+  stock: z.preprocess(
+    (val) => (typeof val === "string" ? Number(val) : val),
+    z
+      .number({ invalid_type_error: "Stock must be a number" })
+      .int()
+      .min(0)
+      .optional()
+      .default(0)
+  ),
 });
 
 // ======================================================
@@ -67,6 +84,21 @@ export const updateProductSchema = z.object({
     .optional(),
 
   price: priceSchema.optional(),
+
+  category: z
+    .string()
+    .max(50, "Category must be less than 50 characters")
+    .trim()
+    .optional(),
+
+  stock: z.preprocess(
+    (val) => (typeof val === "string" ? Number(val) : val),
+    z
+      .number({ invalid_type_error: "Stock must be a number" })
+      .int()
+      .min(0)
+      .optional()
+  ),
 });
 
 // ======================================================

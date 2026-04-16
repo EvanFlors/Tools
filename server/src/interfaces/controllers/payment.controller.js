@@ -16,13 +16,14 @@ const createPayment = async (req, res) => {
       });
     }
 
-    const payment = await PaymentService.create({
+    const { payment, generatedCoupons } = await PaymentService.create({
       saleId: validation.data.saleId,
       amount: validation.data.amount,
+      couponId: validation.data.couponId || null,
       userId: req.user.id,
     });
 
-    res.status(201).json(payment);
+    res.status(201).json({ data: payment, generatedCoupons });
   } catch (error) {
     const statusCode = error.status || 400;
     res.status(statusCode).json({ error: error.message });

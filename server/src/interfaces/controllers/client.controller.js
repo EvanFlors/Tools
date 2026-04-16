@@ -3,6 +3,8 @@ import Payment from "../../domain/models/payment.model.js";
 import Product from "../../domain/models/product.model.js";
 import Sale from "../../domain/models/sale.model.js";
 
+import CouponService from "../../application/services/coupon.service.js";
+
 /**
  * Get products belonging to the admin who created this customer.
  * The JWT payload includes `adminUserId` — the admin who owns the data.
@@ -107,9 +109,39 @@ const getProductDetail = async (req, res) => {
   }
 };
 
+/**
+ * Get rewards summary for the logged-in customer.
+ */
+const getRewards = async (req, res) => {
+  try {
+    const customerId = req.user.id;
+    const summary = await CouponService.getRewardsSummary(customerId);
+    res.json({ data: summary });
+  } catch (error) {
+    console.error("Error fetching rewards:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+/**
+ * Get all coupons for the logged-in customer.
+ */
+const getMyCoupons = async (req, res) => {
+  try {
+    const customerId = req.user.id;
+    const coupons = await CouponService.getAllByCustomer(customerId);
+    res.json({ data: coupons });
+  } catch (error) {
+    console.error("Error fetching coupons:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export default {
   getProducts,
   getProductDetail,
   getMySales,
   getSaleDetail,
+  getRewards,
+  getMyCoupons,
 };

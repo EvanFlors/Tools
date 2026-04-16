@@ -2,22 +2,19 @@ import bcrypt from "bcryptjs";
 import User from "../../domain/models/user.model.js";
 
 async function createBootstrapAdmin() {
-
   const username = process.env.BOOTSTRAP_ADMIN_USERNAME;
   const password = process.env.BOOTSTRAP_ADMIN_PASSWORD;
-  const randomCellNumber = Math.floor(Math.random() * 10000000000).toString();
 
   if (!username || !password) {
     console.log("Bootstrap admin credentials not configured");
     return;
   }
 
-  const adminExists = await User
-    .findOne({ username })
-    .setOptions({ includeDeleted: true });
+  const adminExists = await User.findOne({ username }).setOptions({
+    includeDeleted: true,
+  });
 
   if (adminExists) {
-
     if (adminExists.isDeleted) {
       console.log("Admin exists but is soft-deleted. Restoring...");
 
@@ -36,27 +33,23 @@ async function createBootstrapAdmin() {
   const passwordHash = await bcrypt.hash(password, 12);
 
   try {
-
     const admin = new User({
       username,
       address: "N/A",
-      phone: randomCellNumber,
+      phone: "",
       passwordHash,
-      role: "admin"
+      role: "owner",
     });
 
     await admin.save();
 
     console.log("Bootstrap admin created");
-
   } catch (error) {
-
     if (error.code === 11000) {
       console.log("Race condition: admin created by another instance");
     } else {
       throw error;
     }
-
   }
 }
 

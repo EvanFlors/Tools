@@ -13,11 +13,6 @@ const saleSchema = new mongoose.Schema(
       ref: "Product",
       required: true,
     },
-    paymentType: {
-      type: String,
-      enum: ["full", "installments"],
-      required: true,
-    },
     totalAmount: {
       type: Number,
       required: true,
@@ -30,7 +25,7 @@ const saleSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "completed"],
+      enum: ["active", "completed", "cancelled"],
       default: "active",
     },
     userId: {
@@ -45,17 +40,14 @@ const saleSchema = new mongoose.Schema(
 saleSchema.pre("validate", function () {
   if (this.isNew) {
     if (this.remainingBalance === undefined || this.remainingBalance === null) {
-      if (this.paymentType === "installments") {
-        this.remainingBalance = this.totalAmount;
-      } else if (this.paymentType === "full") {
-        this.remainingBalance = 0;
-      }
+      this.remainingBalance = this.totalAmount;
     }
   }
 });
 
 saleSchema.index({ customerId: 1, status: 1 });
 saleSchema.index({ productId: 1 });
+saleSchema.index({ userId: 1, status: 1 });
 
 saleSchema.plugin(softDeletePlugin);
 

@@ -1,0 +1,35 @@
+import mongoose from "mongoose";
+
+const passwordResetSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
+    tokenHash: {
+      type: String,
+      required: true,
+    },
+    expiresAt: {
+      type: Date,
+      required: true,
+      index: { expires: 0 }, // TTL index — MongoDB auto-deletes expired docs
+    },
+    used: {
+      type: Boolean,
+      default: false,
+    },
+    attempts: {
+      type: Number,
+      default: 0,
+    },
+  },
+  { timestamps: true }
+);
+
+// Only one active reset per user
+passwordResetSchema.index({ userId: 1, used: 1 });
+
+export default mongoose.model("PasswordReset", passwordResetSchema);

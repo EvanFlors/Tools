@@ -16,5 +16,7 @@ router.get("/products", clientController.getProducts);
 router.get("/products/:productId", clientController.getProductDetail);
 router.get("/sales", clientController.getMySales);
 router.get("/sales/:saleId", clientController.getSaleDetail);
+router.get("/rewards", clientController.getRewards);
+router.get("/coupons", clientController.getMyCoupons);
 
 export default router;
