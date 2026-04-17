@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 import { API_BASE } from "../../config/api";
 
 import ProductsGrid from "../../components/ProductsGrid";

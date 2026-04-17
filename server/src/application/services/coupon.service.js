@@ -165,6 +165,118 @@ class CouponService {
       couponValue: COUPON_VALUE,
     };
   }
+
+  /**
+   * Redeem a coupon directly on a sale (customer-initiated).
+   * Creates a payment for min(couponValue, remainingBalance), marks coupon used.
+   */
+  static async redeemForSale(couponId, saleId, customerId) {
+    const mongoose = (await import("mongoose")).default;
+    const Sale = (await import("../../domain/models/sale.model.js")).default;
+    const Audit = (await import("../../domain/models/audit.model.js")).default;
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // 1. Load & validate sale
+      const sale = await Sale.findOne({ _id: saleId, customerId }, null, {
+        session,
+      });
+      if (!sale)
+        throw Object.assign(new Error("Sale not found"), { status: 404 });
+      if (sale.status !== "active") {
+        throw Object.assign(
+          new Error("Can only redeem coupons on active sales"),
+          { status: 422 }
+        );
+      }
+
+      // 2. Load & validate coupon (must belong to same customer and admin)
+      const coupon = await Coupon.findOne({
+        _id: couponId,
+        customerId,
+        userId: sale.userId,
+        status: "available",
+        isDeleted: { $ne: true },
+      }).session(session);
+
+      if (!coupon) {
+        throw Object.assign(new Error("Coupon not found or already used"), {
+          status: 404,
+        });
+      }
+      if (coupon.expiresAt && coupon.expiresAt < new Date()) {
+        coupon.status = "expired";
+        await coupon.save({ session });
+        throw Object.assign(new Error("Coupon has expired"), { status: 400 });
+      }
+
+      // 3. Calculate effective amount
+      const amount = Math.min(coupon.value, sale.remainingBalance);
+      const previousBalance = sale.remainingBalance;
+      const newBalance = previousBalance - amount;
+      const newStatus = newBalance === 0 ? "completed" : "active";
+
+      // 4. Create payment
+      const [payment] = await Payment.create(
+        [{ saleId, amount, previousBalance, newBalance, userId: sale.userId }],
+        { session }
+      );
+
+      // 5. Update sale atomically
+      const updateFields = {
+        $inc: { remainingBalance: -amount },
+        $set: { status: newStatus },
+      };
+      if (newStatus === "completed") updateFields.$set.completedAt = new Date();
+
+      const saleUpdate = await Sale.updateOne(
+        { _id: saleId, remainingBalance: { $gte: amount } },
+        updateFields,
+        { session }
+      );
+      if (saleUpdate.modifiedCount === 0) {
+        throw new Error("Failed to update sale balance");
+      }
+
+      // 6. Mark coupon as used
+      coupon.status = "used";
+      coupon.usedInPaymentId = payment._id;
+      coupon.usedInSaleId = saleId;
+      coupon.usedAt = new Date();
+      await coupon.save({ session });
+
+      // 7. Audit
+      await Audit.create(
+        [
+          {
+            entity: "coupon",
+            entityId: coupon._id,
+            action: "redeem",
+            performedBy: customerId,
+            metadata: {
+              couponCode: coupon.code,
+              amount,
+              saleId,
+              paymentId: payment._id,
+            },
+          },
+        ],
+        { session }
+      );
+
+      await session.commitTransaction();
+      session.endSession();
+
+      return { payment, coupon, appliedAmount: amount };
+    } catch (error) {
+      if (session.inTransaction()) await session.abortTransaction();
+      throw error;
+    } finally {
+      if (!session.hasEnded) session.endSession();
+    }
+  }
 }
 
 export default CouponService;

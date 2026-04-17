@@ -29,6 +29,11 @@ const couponSchema = new mongoose.Schema(
       ref: "Payment",
       default: null,
     },
+    usedInSaleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Sale",
+      default: null,
+    },
     usedAt: {
       type: Date,
       default: null,

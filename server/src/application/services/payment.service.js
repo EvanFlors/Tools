@@ -13,20 +13,28 @@ class PaymentService {
     session.startTransaction();
 
     try {
-      const sale = await Sale.findOne({ _id: saleId, userId }, null, { session });
+      const sale = await Sale.findOne({ _id: saleId, userId }, null, {
+        session,
+      });
       if (!sale) throw new Error("Sale not found");
 
       if (sale.status === "completed") {
-        throw Object.assign(new Error("Sale is already completed"), { status: 422 });
+        throw Object.assign(new Error("Sale is already completed"), {
+          status: 422,
+        });
       }
       if (sale.status === "cancelled") {
-        throw Object.assign(new Error("Cannot add payment to cancelled sale"), { status: 422 });
+        throw Object.assign(new Error("Cannot add payment to cancelled sale"), {
+          status: 422,
+        });
       }
 
       if (amount <= 0 || amount > sale.remainingBalance) {
         throw Object.assign(
           new Error(
-            `Payment amount must be between $0.01 and $${sale.remainingBalance.toFixed(2)}`
+            `Payment amount must be between $0.01 and $${sale.remainingBalance.toFixed(
+              2
+            )}`
           ),
           { status: 422 }
         );
@@ -58,7 +66,9 @@ class PaymentService {
       );
 
       if (saleUpdate.modifiedCount === 0) {
-        throw new Error("Failed to update sale balance (concurrent modification)");
+        throw new Error(
+          "Failed to update sale balance (concurrent modification)"
+        );
       }
 
       // 3. Audit
@@ -81,6 +91,7 @@ class PaymentService {
       }
 
       await session.commitTransaction();
+      session.endSession();
 
       // Post-commit: generate reward coupons (non-critical, outside transaction)
       let generatedCoupons = [];
@@ -95,10 +106,12 @@ class PaymentService {
 
       return { payment, generatedCoupons };
     } catch (error) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       throw error;
     } finally {
-      session.endSession();
+      if (!session.hasEnded) session.endSession();
     }
   }
 
@@ -139,14 +152,18 @@ class PaymentService {
     session.startTransaction();
 
     try {
-      const payment = await Payment.findOne({ _id: paymentId, userId }, null, { session });
+      const payment = await Payment.findOne({ _id: paymentId, userId }, null, {
+        session,
+      });
       if (!payment) {
         throw Object.assign(new Error("Payment not found"), { status: 404 });
       }
 
       const sale = await Sale.findById(payment.saleId).session(session);
       if (!sale) {
-        throw Object.assign(new Error("Associated sale not found"), { status: 404 });
+        throw Object.assign(new Error("Associated sale not found"), {
+          status: 404,
+        });
       }
 
       // Atomic balance restore
@@ -182,10 +199,12 @@ class PaymentService {
       await session.commitTransaction();
       return { message: "Payment deleted successfully" };
     } catch (error) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       throw error;
     } finally {
-      session.endSession();
+      if (!session.hasEnded) session.endSession();
     }
   }
 
@@ -202,22 +221,31 @@ class PaymentService {
         null,
         { session }
       );
-      if (!payment) throw Object.assign(new Error("Payment not found"), { status: 404 });
+      if (!payment)
+        throw Object.assign(new Error("Payment not found"), { status: 404 });
 
       const sale = await Sale.findById(payment.saleId).session(session);
-      if (!sale) throw Object.assign(new Error("Sale not found"), { status: 404 });
+      if (!sale)
+        throw Object.assign(new Error("Sale not found"), { status: 404 });
 
       // Max allowed = remainingBalance + current payment amount
       const maxAllowed = sale.remainingBalance + payment.amount;
 
       if (newData.amount <= 0) {
-        throw Object.assign(new Error("Payment amount must be greater than 0"), { status: 400 });
+        throw Object.assign(
+          new Error("Payment amount must be greater than 0"),
+          { status: 400 }
+        );
       }
 
       if (newData.amount > maxAllowed) {
         throw Object.assign(
           new Error(
-            `Amount cannot exceed $${maxAllowed.toFixed(2)} (remaining $${sale.remainingBalance.toFixed(2)} + current $${payment.amount.toFixed(2)})`
+            `Amount cannot exceed $${maxAllowed.toFixed(
+              2
+            )} (remaining $${sale.remainingBalance.toFixed(
+              2
+            )} + current $${payment.amount.toFixed(2)})`
           ),
           { status: 422 }
         );
@@ -235,7 +263,9 @@ class PaymentService {
           $inc: { remainingBalance: -diff },
           $set: {
             status: newStatus,
-            ...(newStatus === "completed" ? { completedAt: new Date() } : { completedAt: null }),
+            ...(newStatus === "completed"
+              ? { completedAt: new Date() }
+              : { completedAt: null }),
           },
         },
         { session }
@@ -255,7 +285,12 @@ class PaymentService {
             entityId: payment._id,
             action: "update",
             performedBy: userId,
-            metadata: { oldAmount, newAmount: newData.amount, previousBalance, newBalance },
+            metadata: {
+              oldAmount,
+              newAmount: newData.amount,
+              previousBalance,
+              newBalance,
+            },
           },
         ],
         { session }
@@ -264,10 +299,12 @@ class PaymentService {
       await session.commitTransaction();
       return payment;
     } catch (error) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       throw error;
     } finally {
-      session.endSession();
+      if (!session.hasEnded) session.endSession();
     }
   }
 }

@@ -93,12 +93,15 @@ class SaleService {
       );
 
       await session.commitTransaction();
+      session.endSession();
       return sale.populate("customerId productId");
     } catch (error) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       throw error;
     } finally {
-      session.endSession();
+      if (!session.hasEnded) session.endSession();
     }
   }
 
@@ -117,7 +120,8 @@ class SaleService {
     const sale = await Sale.findOne({ _id: id, userId })
       .populate("customerId")
       .populate("productId");
-    if (!sale) throw Object.assign(new Error("Sale not found"), { status: 404 });
+    if (!sale)
+      throw Object.assign(new Error("Sale not found"), { status: 404 });
     return sale;
   }
 
@@ -178,7 +182,9 @@ class SaleService {
 
         if (totalPayments > 0) {
           throw Object.assign(
-            new Error("Cannot cancel sale with payments. Remove payments first."),
+            new Error(
+              "Cannot cancel sale with payments. Remove payments first."
+            ),
             { status: 422 }
           );
         }
@@ -220,13 +226,16 @@ class SaleService {
 
       await sale.save({ session });
       await session.commitTransaction();
+      session.endSession();
 
       return sale.populate("customerId productId");
     } catch (error) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       throw error;
     } finally {
-      session.endSession();
+      if (!session.hasEnded) session.endSession();
     }
   }
 
@@ -271,10 +280,12 @@ class SaleService {
       await session.commitTransaction();
       return { message: "Sale deleted successfully" };
     } catch (error) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       throw error;
     } finally {
-      session.endSession();
+      if (!session.hasEnded) session.endSession();
     }
   }
 }

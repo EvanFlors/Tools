@@ -59,19 +59,17 @@ const saleSchema = new mongoose.Schema(
 // Intentionally thin: only defaults and invariants.
 // All business logic (transitions, stock) lives in the service layer.
 
-saleSchema.pre("validate", function (next) {
+saleSchema.pre("validate", function () {
   if (this.isNew && this.remainingBalance == null) {
     this.remainingBalance = this.totalAmount;
   }
 
   if (this.remainingBalance > this.totalAmount) {
-    return next(new Error("Remaining balance cannot exceed total amount"));
+    throw new Error("Remaining balance cannot exceed total amount");
   }
   if (this.remainingBalance < 0) {
-    return next(new Error("Remaining balance cannot be negative"));
+    throw new Error("Remaining balance cannot be negative");
   }
-
-  next();
 });
 
 // ─── Indexes ──────────────────────────────────────────────────────────

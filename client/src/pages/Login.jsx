@@ -87,48 +87,112 @@ function LoginPage() {
   /* ───── Login View ───── */
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-100 px-4">
-      <div className="bg-neutral-50 border border-neutral-200/80 rounded-xl w-full max-w-md">
+      <div className="bg-neutral-50 border border-neutral-200/80 rounded-xl w-full max-w-md overflow-hidden">
+        {/* Tab toggle */}
         <div className="flex border-b border-neutral-200">
-          {["admin", "customer"].map((m) => (
-            <button
-              key={m}
-              onClick={() => setMode(m)}
-              className={`flex-1 py-3 text-sm font-medium ${
-                mode === m
-                  ? "text-neutral-900 border-b-2 border-neutral-900"
-                  : "text-neutral-400"
-              }`}
-            >
-              {m}
-            </button>
-          ))}
+          <button
+            type="button"
+            onClick={() => setMode("admin")}
+            className={`flex-1 py-3 text-center font-medium text-sm transition-colors ${
+              mode === "admin"
+                ? "text-neutral-900 border-b-2 border-neutral-900"
+                : "text-neutral-400 hover:text-neutral-600"
+            }`}
+          >
+            Admin
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("customer")}
+            className={`flex-1 py-3 text-center font-medium text-sm transition-colors ${
+              mode === "customer"
+                ? "text-neutral-900 border-b-2 border-neutral-900"
+                : "text-neutral-400 hover:text-neutral-600"
+            }`}
+          >
+            Customer
+          </button>
         </div>
 
         <div className="p-7">
+          <h1 className="text-xl font-semibold text-neutral-900 mb-6 text-center tracking-tight">
+            Herramientas
+          </h1>
+
           <Form method="post">
             <input type="hidden" name="mode" value={mode} />
 
             {mode === "admin" ? (
               <>
-                <input name="username" required placeholder="Username" className="input" />
-                <input name="password" type="password" required placeholder="Password" className="input mt-3" />
+                <div className="mb-4">
+                  <label htmlFor="username" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    required
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-neutral-400 bg-neutral-50"
+                  />
+                </div>
+                <div className="mb-6">
+                  <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-neutral-400 bg-neutral-50"
+                  />
+                </div>
               </>
             ) : (
-              <input name="phone" required placeholder="Phone" className="input" />
+              <div className="mb-6">
+                <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  required
+                  placeholder="Enter your phone number"
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-neutral-400 bg-neutral-50"
+                />
+              </div>
             )}
 
             <button
               type="submit"
               disabled={navigation.state === "submitting"}
-              className="w-full mt-5 py-2.5 bg-neutral-900 text-white rounded-lg"
+              className="w-full py-2.5 bg-neutral-900 text-neutral-50 rounded-lg hover:bg-neutral-800 transition font-medium text-sm disabled:opacity-50"
             >
-              {navigation.state === "submitting" ? "Loading..." : "Login"}
+              {navigation.state === "submitting"
+                ? "Logging in..."
+                : mode === "admin"
+                ? "Login as Admin"
+                : "Login as Customer"}
             </button>
           </Form>
 
-          <div className="mt-4 text-center">
-            <button onClick={() => setShowCatalog(true)} className="text-sm text-neutral-500">
-              Browse →
+          {mode === "admin" && (
+            <div className="mt-3 text-center">
+              <Link to="/password-reset" className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors">
+                Forgot password?
+              </Link>
+            </div>
+          )}
+
+          <div className="mt-5 text-center">
+            <button
+              type="button"
+              onClick={() => setShowCatalog(true)}
+              className="text-neutral-500 hover:text-neutral-800 font-medium text-sm transition-colors"
+            >
+              Browse product catalog →
             </button>
           </div>
         </div>

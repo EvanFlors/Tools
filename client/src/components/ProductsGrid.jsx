@@ -12,7 +12,7 @@ function ProductsGrid({ products = [], linkPrefix }) {
       formattedPrice:
         typeof p.price === "number" ? p.price.toFixed(2) : p.price,
       isInStock: p.stock > 0,
-      username: p?.userId?.username || "Unknown",
+      username: p?.userId?.username || undefined,
     }));
   }, [products]);
 
@@ -79,9 +79,11 @@ function ProductsGrid({ products = [], linkPrefix }) {
                     </span>
                   </div>
 
-                  <span className="text-xs text-neutral-500">
-                    by {product.username}
-                  </span>
+                  {product.username && (
+                    <span className="text-xs text-neutral-500">
+                      by {product.username}
+                    </span>
+                  )}
                 </div>
 
                 {linkPrefix && (

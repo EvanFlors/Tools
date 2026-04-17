@@ -1,9 +1,14 @@
-import { Link, useLoaderData } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLoaderData, useRevalidator } from "react-router-dom";
 import { API_BASE } from "../../config/api";
+import { useToastContext } from "../../stores/ToastContext";
 
 function PortalSaleDetailPage() {
-  const data = useLoaderData();
-  const sale = data?.data || data;
+  const { sale: rawSale, coupons } = useLoaderData();
+  const sale = rawSale?.data || rawSale;
+  const revalidator = useRevalidator();
+  const { showToast } = useToastContext();
+  const [redeeming, setRedeeming] = useState(null);
 
   if (!sale || !sale._id) {
     return (
@@ -17,6 +22,36 @@ function PortalSaleDetailPage() {
   }
 
   const payments = sale.payments || [];
+  const availableCoupons = (coupons || []).filter(
+    (c) => c.status === "available" && c.userId === sale.userId && (!c.expiresAt || new Date(c.expiresAt) > new Date())
+  );
+
+  async function handleRedeem(couponId) {
+    setRedeeming(couponId);
+    try {
+      const res = await fetch(`${API_BASE}/client/sales/${sale._id}/redeem`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ couponId }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        showToast(json.error || "Failed to redeem coupon", "error");
+      } else {
+        const applied = json.data?.appliedAmount;
+        showToast(
+          `Coupon redeemed! $${applied?.toFixed(2) || ""} applied to this sale.`,
+          "success"
+        );
+        revalidator.revalidate();
+      }
+    } catch {
+      showToast("Unable to connect to the server.", "error");
+    } finally {
+      setRedeeming(null);
+    }
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
@@ -95,6 +130,41 @@ function PortalSaleDetailPage() {
             })()}
           </div>
 
+          {/* Redeem Coupon */}
+          {sale.status === "active" && availableCoupons.length > 0 && (
+            <div className="bg-yellow-50 border border-yellow-200/80 rounded-lg p-5 mb-6">
+              <h2 className="text-xs font-medium text-yellow-700 mb-3">🎟️ Available Coupons</h2>
+              <p className="text-sm text-yellow-800 mb-4">
+                You have {availableCoupons.length} coupon{availableCoupons.length !== 1 ? "s" : ""} you can apply to this sale.
+              </p>
+              <div className="space-y-2">
+                {availableCoupons.map((coupon) => {
+                  const appliedAmount = Math.min(coupon.value, sale.remainingBalance);
+                  return (
+                    <div key={coupon._id} className="flex items-center justify-between bg-white border border-yellow-200 rounded-lg px-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium text-neutral-900">{coupon.code}</p>
+                        <p className="text-xs text-neutral-500">
+                          Value: ${coupon.value.toFixed(2)} · Will apply: ${appliedAmount.toFixed(2)}
+                          {coupon.expiresAt && (
+                            <> · Expires: {new Date(coupon.expiresAt).toLocaleDateString()}</>
+                          )}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleRedeem(coupon._id)}
+                        disabled={redeeming === coupon._id}
+                        className="px-3 py-1.5 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-sm font-medium disabled:opacity-50"
+                      >
+                        {redeeming === coupon._id ? "Redeeming..." : "Redeem"}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Payment History */}
           <div className="bg-neutral-50 border border-neutral-200/60 rounded-lg p-5 mb-6">
             <h2 className="text-xs font-medium text-neutral-500 mb-4">Payment History</h2>
@@ -147,17 +217,21 @@ export default PortalSaleDetailPage;
 
 export async function loader({ params }) {
   const { saleId } = params;
-  const response = await fetch(
-    `${API_BASE}/client/sales/${saleId}`,
-    { credentials: "include" }
-  );
 
-  if (!response.ok) {
+  const [saleRes, couponsRes] = await Promise.all([
+    fetch(`${API_BASE}/client/sales/${saleId}`, { credentials: "include" }),
+    fetch(`${API_BASE}/client/coupons`, { credentials: "include" }),
+  ]);
+
+  if (!saleRes.ok) {
     throw new Response(
       JSON.stringify({ message: "Could not fetch sale details." }),
       { status: 500 }
     );
   }
 
-  return response.json();
+  const sale = await saleRes.json();
+  const couponsData = couponsRes.ok ? await couponsRes.json() : { data: [] };
+
+  return { sale: sale, coupons: couponsData.data || [] };
 }

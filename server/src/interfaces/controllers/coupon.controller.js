@@ -21,4 +21,20 @@ const getCustomerCoupons = async (req, res) => {
   }
 };
 
-export default { getAdminCoupons, getCustomerCoupons };
+const redeemCoupon = async (req, res) => {
+  try {
+    const { couponId, paymentId, userId, session } = req.params;
+    const result = await CouponService.useCoupon(
+      couponId,
+      paymentId,
+      userId,
+      session
+    );
+    res.json({ data: result });
+  } catch (error) {
+    console.error("Error redeeming coupon:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export default { getAdminCoupons, getCustomerCoupons, redeemCoupon };

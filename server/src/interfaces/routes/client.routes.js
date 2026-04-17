@@ -18,5 +18,6 @@ router.get("/sales", clientController.getMySales);
 router.get("/sales/:saleId", clientController.getSaleDetail);
 router.get("/rewards", clientController.getRewards);
 router.get("/coupons", clientController.getMyCoupons);
+router.post("/sales/:saleId/redeem", clientController.redeemCoupon);
 
 export default router;

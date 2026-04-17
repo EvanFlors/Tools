@@ -137,6 +137,34 @@ const getMyCoupons = async (req, res) => {
   }
 };
 
+/**
+ * Redeem a coupon on an existing active sale.
+ */
+const redeemCoupon = async (req, res) => {
+  try {
+    const customerId = req.user.id;
+    const { saleId } = req.params;
+    const { couponId } = req.body;
+
+    if (!couponId) {
+      return res.status(400).json({ error: "couponId is required" });
+    }
+
+    const result = await CouponService.redeemForSale(
+      couponId,
+      saleId,
+      customerId
+    );
+    res.json({ data: result });
+  } catch (error) {
+    console.error("Error redeeming coupon:", error);
+    const status = error.status || 500;
+    res
+      .status(status)
+      .json({ error: error.message || "Internal server error" });
+  }
+};
+
 export default {
   getProducts,
   getProductDetail,
@@ -144,4 +172,5 @@ export default {
   getSaleDetail,
   getRewards,
   getMyCoupons,
+  redeemCoupon,
 };
