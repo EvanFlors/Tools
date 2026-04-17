@@ -1,0 +1,42 @@
+services:
+  server:
+    image: ${REGISTRY:-localhost:5000}/herramientas-server:${TAG:-latest}
+    ports:
+      - "${SERVER_PORT:-4000}:4000"
+    env_file:
+      - ./server/.env
+    environment:
+      - PORT=4000
+    networks:
+      - herramientas-net
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+
+  client:
+    image: ${REGISTRY:-localhost:5000}/herramientas-client:${TAG:-latest}
+    ports:
+      - "${CLIENT_PORT:-3000}:80"
+    networks:
+      - herramientas-net
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+
+networks:
+  herramientas-net:
+    driver: overlay
