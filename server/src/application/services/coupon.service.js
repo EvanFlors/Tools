@@ -102,28 +102,34 @@ class CouponService {
    * Use a coupon as payment on a sale.
    * Returns the coupon value that was applied.
    */
-  static async useCoupon(couponId, paymentId, userId) {
-    const coupon = await Coupon.findOne({
+  static async useCoupon(couponId, paymentId, userId, session = null) {
+    const query = {
       _id: couponId,
       userId,
       status: "available",
       isDeleted: { $ne: true },
-    });
+    };
+
+    const coupon = session
+      ? await Coupon.findOne(query).session(session)
+      : await Coupon.findOne(query);
 
     if (!coupon) {
-      throw { status: 404, message: "Coupon not found or already used" };
+      throw Object.assign(new Error("Coupon not found or already used"), {
+        status: 404,
+      });
     }
 
     if (coupon.expiresAt && coupon.expiresAt < new Date()) {
       coupon.status = "expired";
-      await coupon.save();
-      throw { status: 400, message: "Coupon has expired" };
+      await coupon.save({ session });
+      throw Object.assign(new Error("Coupon has expired"), { status: 400 });
     }
 
     coupon.status = "used";
     coupon.usedInPaymentId = paymentId;
     coupon.usedAt = new Date();
-    await coupon.save();
+    await coupon.save({ session });
 
     return coupon;
   }

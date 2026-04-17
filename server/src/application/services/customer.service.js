@@ -20,17 +20,29 @@ class CustomerService {
       );
     }
 
-    const phoneBlindIndex = blindIndex(data.phone);
-    const existing = await Customer.findOne({ phoneBlindIndex });
+    // Normalize phone before checking
+    const normalizedPhone = data.phone.replace(/\D/g, "");
+    const phoneIdx = blindIndex(normalizedPhone);
+
+    // Check across ALL admins — phone must be globally unique
+    const existing = await Customer.findOne({ phoneBlindIndex: phoneIdx });
 
     if (existing) {
-      return existing;
+      // If it belongs to the same admin, return existing
+      if (existing.userId.toString() === data.userId.toString()) {
+        return existing;
+      }
+      // If it belongs to a different admin, reject
+      throw Object.assign(
+        new Error("A customer with this phone number already exists."),
+        { status: 422 }
+      );
     }
 
     const customer = await Customer.create({
       name: data.name,
       address: data.address,
-      phone: data.phone,
+      phone: normalizedPhone,
       userId: data.userId,
     });
 
