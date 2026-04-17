@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { logout } from "../../utils/auth";
-import { GlobalToastProvider } from "../../components/Toast";
 
 const linkBase =
   "px-3 py-1.5 rounded-md text-sm transition-colors";
@@ -12,8 +11,7 @@ function PortalLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <GlobalToastProvider>
-      <div className="min-h-screen bg-neutral-100 text-neutral-800">
+    <div className="min-h-screen bg-neutral-100 text-neutral-800">
         <nav className="fixed top-0 left-0 w-full z-50 bg-neutral-50 border-b border-neutral-200">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-12">
             <span className="text-neutral-900 font-semibold text-base tracking-tight">
@@ -92,7 +90,6 @@ function PortalLayout() {
           <Outlet />
         </main>
       </div>
-    </GlobalToastProvider>
   );
 }
 

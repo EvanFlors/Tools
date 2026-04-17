@@ -1,5 +1,5 @@
-import { showGlobalToast } from "../components/Toast";
 import { API_BASE } from "../config/api";
+import { showGlobalToast } from "../stores/ToastContext";
 
 /**
  * Wrapper around fetch that:

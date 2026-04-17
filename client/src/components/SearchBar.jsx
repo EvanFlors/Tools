@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-function SearchBar({ value = "", onChange, placeholder = "Search...", debounceMs = 300 }) {
+function SearchBar({ value = "", onChange, placeholder = "Search...", debounceMs = 400 }) {
   const [local, setLocal] = useState(value);
   const timerRef = useRef(null);
 

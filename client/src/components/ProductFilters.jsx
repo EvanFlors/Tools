@@ -1,4 +1,4 @@
-function ProductFilters({ categories = [], filters, onChange }) {
+function ProductFilters({ categories = [], sellers = [], filters, onChange }) {
   const handleChange = (key, value) => {
     onChange({ ...filters, [key]: value });
   };
@@ -8,6 +8,7 @@ function ProductFilters({ categories = [], filters, onChange }) {
     filters.minPrice,
     filters.maxPrice,
     filters.inStock,
+    filters.username,
   ].filter(Boolean).length;
 
   return (
@@ -54,10 +55,26 @@ function ProductFilters({ categories = [], filters, onChange }) {
         In stock
       </label>
 
+      {/* Username (seller) */}
+      <select
+        value={filters.username || ""}
+        onChange={(e) => handleChange("username", e.target.value)}
+        className="w-36 border border-neutral-200 rounded-lg px-2.5 py-2 text-sm bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+      >
+        <option value="">All sellers</option>
+        {
+            sellers.map((seller) => (
+              <option key={seller.username} value={seller.username}>
+                {seller.username}
+              </option>
+            ))
+        }
+      </select>
+
       {/* Clear */}
       {activeCount > 0 && (
         <button
-          onClick={() => onChange({ category: "", minPrice: "", maxPrice: "", inStock: "" })}
+          onClick={() => onChange({ category: "", minPrice: "", maxPrice: "", inStock: "", ...(filters.username !== undefined && { username: "" }) })}
           className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors"
         >
           Clear filters ({activeCount})
